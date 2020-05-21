@@ -1,0 +1,48 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-memoir}[2013/09/22 v0.01a changes to `]
+\renewcommand*{\memRTLraggedright}{\simurgh@raggedright}
+\renewcommand*{\memRTLraggedleft}{\simurgh@raggedleft}
+\renewcommand*{\thesection}{\thechapter\@SepMark\@arabic\c@section}
+\renewcommand*{\thesubsection}{%
+              \thesection\@SepMark\@arabic\c@subsection}
+\renewcommand*{\thesubsubsection}{%
+              \thesubsection\@SepMark\@arabic\c@subsubsection}
+\renewcommand*{\theparagraph}{%
+              \thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand*{\thesubparagraph}{%
+              \theparagraph\@SepMark\@arabic\c@subparagraph}
+\renewcommand{\setthesection}{\thechapter\@SepMark\Alph{section}}
+\renewcommand{\theequation}{%
+  \ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand{\thefigure}{\thechapter\@SepMark\@arabic\c@figure}
+\renewcommand{\thetable}{\thechapter\@SepMark\@arabic\c@table}
+
+\renewenvironment{thebibliography}[1]{%
+  \bibsection
+      \if@RTL%
+        \if@LTRbibitems%
+          \@RTLfalse%
+          \pardir TLT%
+          \textdir TLT%
+        \fi%
+      \else%
+        \if@RTLbibitems%
+          \@RTLtrue%
+          \pardir TRT%
+          \textdir TRT%
+        \fi%
+      \fi%
+  \begin{bibitemlist}{#1}}{\end{bibitemlist}\postbibhook}
+
+\renewcommand{\@memfront}{%
+  \@smemfront\pagenumbering{harfi}}
+\renewcommand{\setthesection}{\thechapter\@SepMark\harfi{section}}
+\renewcommand*{\thebook}{\@tartibi\c@book}
+\renewcommand*{\thepart}{\@tartibi\c@part}
+\renewcommand{\appendix}{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}%
+  \anappendixtrue}
+\endinput

@@ -1,0 +1,271 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-poem}%
+[2013/09/18 v0.01a typesetting Persian traditional and modern poems]
+\def\poemcolsepskip{.1\versewidth plus .1\versewidth minus .05\versewidth}
+\def\poemmarginskip{1em plus 1fil minus 1em}
+\def\poemextrabaselineskip{0\baselineskip}
+\def\poemskip{\medskip}
+\newcommand{\simurghpoem@openbox}{\leavevmode
+  \hbox to.77778em{%
+  \hfil\vrule
+  \vbox to.675em{\hrule width.6em\vfil\hrule}%
+  \vrule\hfil}}
+\def\poemblocksep{\quad\hbox{\simurghpoem@openbox}}
+\newdimen\versewidth
+\newtoks\simurghpoem@p@ftn
+\def\poem@verse#1{%
+\ifdim\wd#1>\new@poem@width
+\xdef\new@poem@width{\the\wd#1}%
+\ifdim\new@poem@width>\poem@width
+\xdef\poem@width{\new@poem@width}%
+\global\let\poem@needrun\relax
+\fi
+\fi
+\hbox to\poem@width{\unhbox#1}%
+\global\simurghpoem@p@ftn\expandafter{\expandafter}\the\simurghpoem@p@ftn%
+}
+\def\poem@linebegin{\vadjust{}\hskip\@flushglue\hskip\poemmarginskip\relax}
+\def\poem@lineend{\nobreak\hskip\poemmarginskip\hskip\@flushglue\vadjust{}}
+\def\poem@lineversesep{%
+\nobreak
+\hskip\z@ plus 1filll%
+\penalty600%
+\hskip\poemcolsepskip
+\hskip\z@ plus -2filll%
+\vadjust{}%
+\nobreak
+\hskip\z@ plus 1filll%
+}
+\def\poem@lineparsebegin{%
+\halign\bgroup
+\global\setbox\verse@i=\hbox{%
+\let\@footnotetext\simurghpoem@p@ftntext%
+\let\@LTRfootnotetext\simurghpoem@p@LTRftntext%
+\let\@RTLfootnotetext\simurghpoem@p@RTLftntext%
+\let\@xfootnotenext\simurghpoem@p@xftntext%
+\let\@xfootnote\simurghpoem@p@xfootnote%
+\let\@xLTRfootnotenext\simurghpoem@p@xLTRftntext%
+\let\@xLTRfootnote\simurghpoem@p@xLTRfootnote%
+\let\@xRTLfootnotenext\simurghpoem@p@xRTLftntext%
+\let\@xRTLfootnote\simurghpoem@p@xRTLfootnote%
+\ignorespaces##\unskip}&&
+\global\setbox\verse@ii=\hbox{%
+\let\@footnotetext\simurghpoem@p@ftntext%
+\let\@LTRfootnotetext\simurghpoem@p@LTRftntext%
+\let\@RTLfootnotetext\simurghpoem@p@RTLftntext%
+\let\@xfootnotenext\simurghpoem@p@xftntext%
+\let\@xfootnote\simurghpoem@p@xfootnote%
+\let\@xLTRfootnotenext\simurghpoem@p@xLTRftntext%
+\let\@xLTRfootnote\simurghpoem@p@xLTRfootnote%
+\let\@xRTLfootnotenext\simurghpoem@p@xRTLftntext%
+\let\@xRTLfootnote\simurghpoem@p@xRTLfootnote%
+\ignorespaces##\unskip}
+\cr
+}
+\def\poem@lineparseend{%
+\crcr\egroup
+\vskip-\baselineskip
+}
+\def\oldpoem@cr{%
+  \cr\poem@line
+}
+\newbox\verse@i
+\newbox\verse@ii
+\newif\ifpoem@started
+
+\def\poem@line{%
+\poem@lineparseend
+\ifdim\wd\verse@i>\z@\global\poem@startedtrue\fi
+\ifdim\wd\verse@ii>\z@\global\poem@startedtrue\fi
+\ifpoem@started
+  \ifdim\wd\verse@ii>\z@\else
+  \nopagebreak[3]
+  \fi
+  \leavevmode
+  \poem@linebegin
+  \poem@verse\verse@i
+  \ifdim\wd\verse@ii>\z@
+  \poem@lineversesep
+  \poem@verse\verse@ii
+  \fi
+  \poem@lineend
+  \nopagebreak
+  \endgraf
+  \vskip\poemextrabaselineskip
+\fi
+\poem@lineparsebegin
+}
+\def\@traditionalpoem{%
+\stepcounter{poem@no}
+        \ifnum\max@poem@no<\number\c@poem@no%
+\xdef\poem@width{\z@}%
+        \else
+\xdef\poem@width{\poem@prop{poem@width}}%
+\fi
+\xdef\new@poem@width{\z@}%
+\global\versewidth=\poem@width
+\poemskip\leavevmode\par
+\begingroup
+\tabskip=\z@
+\parskip=\z@
+\parindent=\z@
+\parfillskip=\z@
+\rightskip=\z@
+\leftskip=\z@
+\widowpenalty=10000% No break between verses of the same line.
+\clubpenalty=10000% Same as above.  Not really needed.
+\def\newblock{\hfil\poemblocksep\hfil\null}%
+\def\par{\oldpoem@cr}% Redefine \par for possible \obeylines
+\def\\{\global\poem@startedtrue\oldpoem@cr}%
+\global\poem@startedfalse
+\csname poem@obeylines\endcsname
+\let\poem@obeylines\relax
+\poem@lineparsebegin
+}
+\def\@endtraditionalpoem{%
+\cr
+\ifdim\wd\verse@i>\z@\poem@line\else\ifdim\wd\verse@ii>\z@\poem@line\else
+\noalign{%
+\skip0=\poemextrabaselineskip
+\vskip-\skip0
+\vskip-\baselineskip
+}%
+\fi\fi
+\poem@lineparseend
+\endgroup
+\par
+\vskip\baselineskip
+\poemskip
+\ifdim\new@poem@width<\poem@width
+\global\let\poem@needrun\relax
+\fi
+        \poem@write@aux{poem@width@\romannumeral\c@poem@no}{\new@poem@width}%
+\ifx\AtEndDocument\undefined\poem@finish\fi
+}
+
+\long\def\simurghpoem@p@ftntext#1{%
+  \edef\@tempx{\the\simurghpoem@p@ftn\noexpand\footnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurghpoem@p@ftn\expandafter{\@tempx{#1}}}%
+\long\def\simurghpoem@p@LTRftntext#1{%
+  \edef\@tempxi{\the\simurghpoem@p@ftn\noexpand\LTRfootnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurghpoem@p@ftn\expandafter{\@tempxi{#1}}}%
+\long\def\simurghpoem@p@RTLftntext#1{%
+  \edef\@tempxii{\the\simurghpoem@p@ftn\noexpand\RTLfootnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurghpoem@p@ftn\expandafter{\@tempxii{#1}}}%
+
+\long\def\simurghpoem@p@xftntext[#1]#2{%
+  \global\simurghpoem@p@ftn\expandafter{\the\simurghpoem@p@ftn\footnotetext[#1]{#2}}}
+
+\long\def\simurghpoem@p@xLTRftntext[#1]#2{%
+  \global\simurghpoem@p@ftn\expandafter{\the\simurghpoem@p@ftn\LTRfootnotetext[#1]{#2}}}
+
+\long\def\simurghpoem@p@xRTLftntext[#1]#2{%
+  \global\simurghpoem@p@ftn\expandafter{\the\simurghpoem@p@ftn\RTLfootnotetext[#1]{#2}}}
+
+\def\simurghpoem@p@xfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurghpoem@p@xftntext[#1]}
+
+\def\simurghpoem@p@xLTRfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurghpoem@p@xLTRftntext[#1]}
+
+\def\simurghpoem@p@xRTLfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurghpoem@p@xRTLftntext[#1]}
+
+\newenvironment{traditionalpoem}{\@traditionalpoem}{\@endtraditionalpoem}
+\expandafter\def\csname traditionalpoem*\endcsname{\let\poem@obeylines=\obeylines\traditionalpoem}
+\expandafter\def\csname endtraditionalpoem*\endcsname{\endtraditionalpoem}
+\def\poem@finish{%
+\poem@write@aux{max@poem@no}{\number\c@poem@no}%
+\ifx\poem@needrun\relax
+\simurgh@warning{unjustified poem.  rerun lualatex to get poem right}%
+\global\let\poem@needrun\undefined
+\fi
+}
+\ifx\AtEndDocument\undefined\else\AtEndDocument\poem@finish\fi
+\newcounter{poem@no}\setcounter{poem@no}{\z@}
+\ifx\max@poem@no\undefined
+        \def\max@poem@no{0}%
+\fi
+\newcommand{\poem@prop}[1]{\@nameuse{#1@\romannumeral\c@poem@no}}
+\newcommand{\poem@write@aux}[2]{%
+        \def\@x{\immediate\write\@auxout{\global\noexpand\@namedef{#1}{#2}}}%
+        \@x
+}
+\def\@modernpoem{%
+\par
+\begingroup
+\parskip=\z@
+\parindent=\z@
+\def\[{\@settab\@tabplus\ignorespaces}%
+\def\]{\@tabminus\ignorespaces}%
+\def\newblock{\poemblocksep}%
+\let\newpoem@tabcr\@tabcr
+\def\par{% Redefine \par for possible \obeylines
+  \ifpoem@started\else
+    \ifdim\wd\@curline>\z@\global\poem@startedtrue\else
+      \@stopfield
+      \ifdim\wd\@curfield>\z@\global\poem@startedtrue\fi
+      \@contfield
+    \fi
+  \fi
+  \ifpoem@started\newpoem@tabcr\fi}%
+\def\@tabcr{\global\poem@startedtrue\newpoem@tabcr}%
+\global\poem@startedfalse
+\csname poem@obeylines\endcsname
+\let\poem@obeylines\relax
+\begin{tabbing}%
+}
+\def\@endmodernpoem{%
+\global\poem@startedfalse
+\ifdim\wd\@curline>\z@\global\poem@startedtrue\else
+  \@stopfield
+  \ifdim\wd\@curfield>\z@\global\poem@startedtrue\fi
+  \@contfield
+\fi
+\ifpoem@started\else\let\@stopline\@stopfield\fi
+\end{tabbing}%
+\endgroup
+\par
+}
+\newenvironment{modernpoem}{\@modernpoem}{\@endmodernpoem}
+\expandafter\def\csname modernpoem*\endcsname{\let\poem@obeylines=\obeylines\modernpoem}
+\expandafter\def\csname endmodernpoem*\endcsname{\endmodernpoem}
+\gdef\@startfield{%
+\global\setbox\@curfield\hbox\bgroup%
+\let\@footnotetext\simurghpoem@p@ftntext%
+\let\@LTRfootnotetext\simurghpoem@p@LTRftntext%
+\let\@RTLfootnotetext\simurghpoem@p@RTLftntext%
+\let\@xfootnotenext\simurghpoem@p@xftntext%
+\let\@xfootnote\simurghpoem@p@xfootnote%
+\let\@xLTRfootnotenext\simurghpoem@p@xLTRftntext%
+\let\@xLTRfootnote\simurghpoem@p@xLTRfootnote%
+\let\@xRTLfootnotenext\simurghpoem@p@xRTLftntext%
+\let\@xRTLfootnote\simurghpoem@p@xRTLfootnote%
+\color@begingroup}
+\gdef\@stopfield{%
+  \color@endgroup\egroup\global\simurghpoem@p@ftn\expandafter{\expandafter}\the\simurghpoem@p@ftn}
+\gdef\@contfield{%
+\global\setbox\@curfield\hbox\bgroup%
+\let\@footnotetext\simurghpoem@p@ftntext%
+\let\@LTRfootnotetext\simurghpoem@p@LTRftntext%
+\let\@RTLfootnotetext\simurghpoem@p@RTLftntext%
+\let\@xfootnotenext\simurghpoem@p@xftntext%
+\let\@xfootnote\simurghpoem@p@xfootnote%
+\let\@xLTRfootnotenext\simurghpoem@p@xLTRftntext%
+\let\@xLTRfootnote\simurghpoem@p@xLTRfootnote%
+\let\@xRTLfootnotenext\simurghpoem@p@xRTLftntext%
+\let\@xRTLfootnote\simurghpoem@p@xRTLfootnote%
+\color@begingroup\unhbox\@curfield}
+\endinput

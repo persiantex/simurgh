@@ -1,0 +1,24 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-backref}[2013/09/18 v0.01a changes to `backref.sty']
+\def\backrefpagesname{\if@RTL صفحات\else pages\fi}
+\def\BR@Latincitex[#1]#2{%
+  \BRorg@Latincitex[{#1}]{#2}%
+  \ifBR@verbose
+    \PackageInfo{backref}{back Latin cite \string`#2\string'}%
+  \fi
+  \Hy@backout{#2}%
+}
+\AtBeginDocument{%
+  \@ifundefined{NAT@parse}{%
+    \global\let\BRorg@Latincitex\@Latincitex
+    \global\let\@Latincitex\BR@Latincitex
+  }{%
+    \@ifpackageloaded{hyperref}{}{%
+      \def\hyper@natlinkstart#1{\Hy@backout{#1}}%
+    }%
+    \PackageInfo{backref}{** backref set up for natbib **}%
+  }%
+}%
+
+
+\endinput

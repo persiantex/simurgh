@@ -1,0 +1,108 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-bidi}[2013/09/18 v0.01a bidirectional typesetting]
+\directlua { tex.enableprimitives('',{'pagedir','bodydir','pardir','textdir','mathdir','boxdir'}) }
+\newif\if@RTLmain
+\newif\if@RTL
+\newif\if@Latin
+\@RTLmainfalse
+\AtBeginDocument{%
+  \if@RTLmain\else
+    \if@RTL\@RTLmaintrue%
+    \else\@RTLmainfalse%
+    \fi%
+  \fi%
+}
+\let\simurgh@n@xt=\
+\simurgh@newrobustcmd*{\textLRE}{\protect\simurgh@ptextLRE}%
+\def\simurgh@ptextLRE{\protect\afterassignment\simurgh@moretextLRE \let\simurgh@n@xt= }
+\simurgh@newrobustcmd*{\textRLE}{\protect\simurgh@ptextRLE}
+\def\simurgh@ptextRLE{\protect\afterassignment\simurgh@moretextRLE \let\simurgh@n@xt= }
+\def\simurgh@bracetext{\ifcat\simurgh@n@xt{\else\ifcat\simurgh@n@xt}\fi
+  \simurgh@error{missing left brace has been substituted}{}\fi \bgroup}
+\def\simurgh@moretextLRE{\simurgh@bracetext \@RTLfalse\textdir TLT}
+\def\simurgh@moretextRLE{\simurgh@bracetext \@RTLtrue\textdir TRT}
+
+\simurgh@newrobustcmd*{\textLatin}[1]{\textLRE{\@Latintrue\latinmainfont #1}}
+\simurgh@newrobustcmd*{\textParsi}[1]{\textRLE{\@Latinfalse\parsimainfont #1}}
+
+\simurgh@newrobustcmd*{\LROtextdir}{\textdir TLT}
+\simurgh@newrobustcmd*{\RLOtextdir}{\textdir TRT}
+
+\protected\def\hboxR{\hbox\bgroup
+ \everyhbox{%
+  \aftergroup\egroup
+  \everyhbox{}%
+  \@RTLtrue%
+  \textdir TRT%
+ }\hbox dir TRT}
+\protected\def\hboxL{\hbox\bgroup
+ \everyhbox{%
+  \aftergroup\egroup
+  \everyhbox{}%
+  \@RTLfalse%
+  \textdir TLT%
+ }\hbox dir TLT}
+\protected\def\vboxR{\vbox\bgroup
+ \everyvbox{%
+  \aftergroup\egroup
+  \everyvbox{}%
+  \@RTLtrue%
+ }\vbox dir TRT}
+\protected\def\vboxL{\vbox\bgroup
+ \everyvbox{%
+  \aftergroup\egroup
+  \everyvbox{}%
+  \@RTLfalse%
+ }\vbox dir TLT}
+\protected\def\vtopR{\vtop\bgroup
+ \everyvbox{%
+  \aftergroup\egroup
+  \everyvbox{}%
+  \@RTLtrue%
+ }\vtop dir TRT}
+\protected\def\vtopL{\vtop\bgroup
+ \everyvbox{%
+  \aftergroup\egroup
+  \everyvbox{}%
+  \@RTLfalse%
+ }\vtop dir TLT}
+ 
+
+ 
+ \def\LTRpar{\par\@RTLfalse\@RTL@footnotefalse\pardir TLT \textdir TLT \hsize\linewidth\parshape\z@}
+\def\endLTRpar{\par}
+\def\RTLpar{\par\@RTLtrue\@RTL@footnotetrue\pardir TRT \textdir TRT \hsize\linewidth\parshape\z@}
+\let\endRTLpar\endLTRpar
+\def\setRTLpar{\@RTLtrue\@RTL@footnotetrue\pardir TRT \textdir TRT}
+\def\setLTRpar{\@RTLfalse\@RTL@footnotefalse\pardir TLT \textdir TLT}
+\let\unsetRTLpar\setLTRpar
+\let\unsetLTRpar\setRTLpar
+
+
+\def\latinpar{\LTRpar\LatinAlphs\@Latintrue\@RTL@footnotefalse\reset@latinfont}
+\let\endlatinpar\endLTRpar
+\def\parsipar{\RTLpar\ParsiAlphs\@RTL@footnotetrue\reset@parsifont}
+\let\endparsipar\endRTLpar
+
+\def\setRTLmath{\mathdir TRT}
+\def\setLTRmath{\mathdir TLT}
+\let\unsetRTLmath\setLTRmath
+\let\unsetLTRmath\setRTLmath
+
+\def\ensureRTLtext#1{\if@RTL#1\else\textRLE{#1}\fi}
+\def\ensureLTRtext#1{\if@RTL\textLRE{#1}\else#1\fi}
+\def\simurgh@par@RTL{RTL}
+\def\simurgh@par@LTR{LTR}
+\def\savepardir{\if@RTL\gdef\saved@par@dir{RTL}\else\gdef\saved@par@dir{LTR}\fi}
+\def\resetpardir{\ifx\saved@par@dir\simurgh@par@RTL\setRTLpar\else\ifx\saved@par@dir\simurgh@par@LTR\setLTRpar\else\relax\fi\fi}
+
+
+\def\ensureparsitext#1{\if@Latin\textParsi{#1}\else #1 \fi}
+\def\ensurelatintext#1{\if@Latin #1 \else\textLatin{#1}\fi}
+
+\long\def\ensuresboxdir#1#2{\if@RTL\setbox#1\hbox dir TRT{%
+  \color@setgroup#2\color@endgroup}\else%
+\setbox#1\hbox dir TLT{%
+  \color@setgroup#2\color@endgroup}\fi}
+
+\endinput

@@ -1,0 +1,27 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-fleqn}[2013/09/22 v0.01a fleqn]
+\renewcommand\[{\relax
+                \ifmmode\@badmath
+                \else
+                  \begin{trivlist}%
+                    \@beginparpenalty\predisplaypenalty
+                    \@endparpenalty\postdisplaypenalty
+                    \item[]\leavevmode
+                    \hbox dir TLT to \linewidth\bgroup $\m@th\displaystyle %$
+                      \hskip\mathindent\bgroup
+                \fi}
+                
+
+\renewenvironment{equation}%
+    {\@beginparpenalty\predisplaypenalty
+     \@endparpenalty\postdisplaypenalty
+     \refstepcounter{equation}%
+     \trivlist \item[]\leavevmode
+       \hbox dir TLT to \linewidth\bgroup $\m@th% $
+         \displaystyle
+         \hskip\mathindent}%
+        {$\hfil % $
+         \displaywidth\linewidth\if@RTL\hboxR\else\hboxL\fi{\@eqnnum}%
+       \egroup
+     \endtrivlist}
+\endinput

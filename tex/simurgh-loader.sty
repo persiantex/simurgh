@@ -1,0 +1,12 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-loader}[2013/09/18 v0.01a loading simurgh last]
+\newcommand\simurgh@isloaded[2][]{
+  \expandafter\ifx\csname if@simurgh@#2loaded@\endcsname\relax
+    \expandafter\newif\csname if@simurgh@#2loaded@\endcsname
+  \fi
+  \@ifpackageloaded{#2}
+    {\csname @simurgh@#2loaded@true\endcsname #1}
+    {\csname @simurgh@#2loaded@false\endcsname}}
+    
+
+\endinput

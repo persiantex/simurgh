@@ -1,0 +1,23 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-unibidi}[2013/09/18 v0.01a unicode bidi]
+\RequireLuaModule {simurgh-unibidi}
+\simurgh@newrobustcmd*{\simurgh@unibidi@cs}[1]{\directlua {packagedata.typo_dir.#1}}
+\simurgh@newrobustcmd*{\simurgh@unibidi@setdir}[1]{\simurgh@unibidi@cs{set (#1)}}
+\simurgh@newrobustcmd*{\simurgh@unibidi@setmode}[1]{% scope, method, fences
+  \if@simurgh@csundef{simurgh@unibidi@currentmode}{%
+    \simurgh@newrobustcmd*{\simurgh@unibidi@currentmode}{\simurgh@unibidi@cs{getbidimode {
+      scope   = [[#1]],
+      method  = [[default]],
+      fences  = [[yes]]
+      }}}%
+    }{%
+      \simurgh@renewrobustcmd*{\simurgh@unibidi@currentmode}{\simurgh@unibidi@cs{getbidimode {
+        scope   = [[#1]],
+        method  = [[default]],
+        fences  = [[yes]]
+        }}}%
+    }%          
+  \simurgh@unibidi@setdir{\number\simurgh@unibidi@currentmode}%
+}
+
+\endinput

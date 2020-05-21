@@ -1,0 +1,189 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-ftnxtra}[2013/09/18 v0.01a extend the applicability of footnotes]
+\newtoks\simurgh@p@ftn
+\let\FN@sf@@footnote\footnote
+\let\FN@sf@@LTRfootnote\LTRfootnote
+\let\FN@sf@@RTLfootnote\RTLfootnote
+\def\footnote{\ifx\protect\@typeset@protect
+    \expandafter\FN@sf@@footnote
+  \else
+    \expandafter\FN@sf@gobble@opt
+  \fi
+}
+\def\LTRfootnote{\ifx\protect\@typeset@protect
+    \expandafter\FN@sf@@LTRfootnote
+  \else
+    \expandafter\FN@sf@gobble@opt
+  \fi
+}
+\def\RTLfootnote{\ifx\protect\@typeset@protect
+    \expandafter\FN@sf@@RTLfootnote
+  \else
+    \expandafter\FN@sf@gobble@opt
+  \fi
+}
+\edef\FN@sf@gobble@opt{\noexpand\protect
+  \expandafter\noexpand\csname FN@sf@gobble@opt \endcsname}
+\expandafter\def\csname FN@sf@gobble@opt \endcsname{%
+  \@ifnextchar[%]
+    \FN@sf@gobble@twobracket
+    \@gobble
+}
+\def\FN@sf@gobble@twobracket[#1]#2{}
+\let\FN@sf@@footnotemark\footnotemark
+\def\footnotemark{\ifx\protect\@typeset@protect
+    \expandafter\FN@sf@@footnotemark
+  \else
+    \expandafter\FN@sf@gobble@optonly
+  \fi
+}
+\edef\FN@sf@gobble@optonly{\noexpand\protect
+  \expandafter\noexpand\csname FN@sf@gobble@optonly \endcsname}
+\expandafter\def\csname FN@sf@gobble@optonly \endcsname{%
+  \@ifnextchar[%]
+    \FN@sf@gobble@bracket
+    {}%
+}
+\def\FN@sf@gobble@bracket[#1]{}
+\def\@tabular{\if@RTL\@RTLtabtrue\fi
+   \leavevmode \hbox \bgroup
+   \let\@footnotetext\simurgh@p@ftntext
+   \let\@LTRfootnotetext\simurgh@p@LTRftntext
+   \let\@RTLfootnotetext\simurgh@p@RTLftntext
+   \let\@xfootnotenext\simurgh@p@xftntext
+   \let\@xfootnote\simurgh@p@xfootnote
+   \let\@xLTRfootnotenext\simurgh@p@xLTRftntext
+   \let\@xLTRfootnote\simurgh@p@xLTRfootnote
+    \let\@xRTLfootnotenext\simurgh@p@xRTLftntext
+   \let\@xRTLfootnote\simurgh@p@xRTLfootnote
+   $\let\@acol\@tabacol
+   \let\@classz\@tabclassz
+   \let\@classiv\@tabclassiv \let\\\@tabularcr\@tabarray}
+\def\endtabular{\crcr\egroup
+                 \egroup $\egroup
+                  \ifx\@captype\@undefined
+                   \global\simurgh@p@ftn\expandafter{\expandafter}\the\simurgh@p@ftn\fi%
+                 \@RTLtabfalse}
+\long\def\simurgh@p@ftntext#1{%
+  \edef\@tempy{\the\simurgh@p@ftn\noexpand\footnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurgh@p@ftn\expandafter{\@tempy{#1}}}%
+\long\def\simurgh@p@LTRftntext#1{%
+  \edef\@tempyi{\the\simurgh@p@ftn\noexpand\LTRfootnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurgh@p@ftn\expandafter{\@tempyi{#1}}}%
+\long\def\simurgh@p@RTLftntext#1{%
+  \edef\@tempyii{\the\simurgh@p@ftn\noexpand\RTLfootnotetext[\the\csname c@\@mpfn\endcsname]}%
+  \global\simurgh@p@ftn\expandafter{\@tempyii{#1}}}%
+
+\long\def\simurgh@p@xftntext[#1]#2{%
+  \global\simurgh@p@ftn\expandafter{\the\simurgh@p@ftn\footnotetext[#1]{#2}}}
+
+\long\def\simurgh@p@xLTRftntext[#1]#2{%
+  \global\simurgh@p@ftn\expandafter{\the\simurgh@p@ftn\LTRfootnotetext[#1]{#2}}}
+
+\long\def\simurgh@p@xRTLftntext[#1]#2{%
+  \global\simurgh@p@ftn\expandafter{\the\simurgh@p@ftn\RTLfootnotetext[#1]{#2}}}
+
+\def\simurgh@p@xfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurgh@p@xftntext[#1]}
+
+\def\simurgh@p@xLTRfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurgh@p@xLTRftntext[#1]}
+
+\def\simurgh@p@xRTLfootnote[#1]{%
+   \begingroup
+     \csname c@\@mpfn\endcsname #1\relax
+     \unrestored@protected@xdef\@thefnmark{\thempfn}%
+   \endgroup
+   \@footnotemark\simurgh@p@xRTLftntext[#1]}
+
+\def\@xfloat #1[#2]{%
+  \@nodocument
+  \def \@captype {#1}%
+   \def \@fps {#2}%
+   \@onelevel@sanitize \@fps
+   \def \reserved@b {!}%
+   \ifx \reserved@b \@fps
+     \@fpsadddefault
+   \else
+     \ifx \@fps \@empty
+       \@fpsadddefault
+     \fi
+   \fi
+   \ifhmode
+     \@bsphack
+     \@floatpenalty -\@Mii
+   \else
+     \@floatpenalty-\@Miii
+   \fi
+  \ifinner
+     \@parmoderr\@floatpenalty\z@
+  \else
+    \@next\@currbox\@freelist
+      {%
+       \@tempcnta \sixt@@n
+       \expandafter \@tfor \expandafter \reserved@a
+         \expandafter :\expandafter =\@fps
+         \do
+          {%
+           \if \reserved@a h%
+             \ifodd \@tempcnta
+             \else
+               \advance \@tempcnta \@ne
+             \fi
+           \fi
+           \if \reserved@a t%
+             \@setfpsbit \tw@
+           \fi
+           \if \reserved@a b%
+             \@setfpsbit 4%
+           \fi
+           \if \reserved@a p%
+             \@setfpsbit 8%
+           \fi
+           \if \reserved@a !%
+             \ifnum \@tempcnta>15
+               \advance\@tempcnta -\sixt@@n\relax
+             \fi
+           \fi
+           }%
+       \@tempcntb \csname ftype@\@captype \endcsname
+       \multiply \@tempcntb \@xxxii
+       \advance \@tempcnta \@tempcntb
+       \global \count\@currbox \@tempcnta
+       }%
+    \@fltovf
+  \fi
+  \global \setbox\@currbox
+    \color@vbox
+      \normalcolor
+      \vbox \bgroup
+       \let\@footnotetext\simurgh@p@ftntext
+       \let\@LTRfootnotetext\simurgh@p@LTRftntext
+       \let\@RTLfootnotetext\simurgh@p@RTLftntext
+       \let\@xfootnotenext\simurgh@p@xftntext
+        \let\@xfootnote\simurgh@p@xfootnote
+        \let\@xLTRfootnotenext\simurgh@p@xLTRftntext
+        \let\@xLTRfootnote\simurgh@p@xLTRfootnote
+        \let\@xRTLfootnotenext\simurgh@p@xRTLftntext
+        \let\@xRTLfootnote\simurgh@p@xRTLfootnote
+        \hsize\columnwidth
+        \@parboxrestore
+        \@floatboxreset
+}
+\def \@endfloatbox{%
+      \par\vskip\z@skip      %% \par\vskip\z@ added 15 Dec 87
+      \@minipagefalse
+      \outer@nobreak
+    \egroup                  %% end of vbox
+    \global\simurgh@p@ftn\expandafter{\expandafter}\the\simurgh@p@ftn
+  \color@endbox
+}
+\endinput

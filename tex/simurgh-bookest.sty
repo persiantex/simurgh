@@ -1,0 +1,43 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-bookest}[2013/09/18 v0.01a changes to `bookest.cls']
+\def\@makechapterhead#1{%
+  \vspace*{20\p@}
+  {\parindent \z@ \simurgh@raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        {\colorA\huge\scshape \@chapapp\space \thechapter}
+        \par\nobreak
+        \vskip 10\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+  {\colorB\hrule}
+  \vskip 15\p@
+   \if@RTL\begin{flushleft}\else\begin{flushright}\fi
+     {\colorA\Huge \bfseries #1}\par\nobreak
+   \if@RTL\end{flushleft}\else\end{flushright}\fi
+  \vskip 5\p@
+  {\colorB\hrule}
+  \vskip 30\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{20\p@}
+  {\parindent \z@ \raggedright \normalfont
+  {\colorB\hrule}
+  \vskip 15\p@
+   \begin{center}
+     {\colorA\Huge \bfseries #1}\par\nobreak
+   \end{center}
+  \vskip 5\p@
+  {\colorB\hrule}
+  \vskip 30\p@
+  }}
+  
+\renewcommand \thepart {\@tartibi\c@part}
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+\endinput

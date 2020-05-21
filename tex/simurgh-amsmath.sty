@@ -1,0 +1,128 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-amsmath}[2013/09/22 v0.01b changes to `amsmath.sty']
+\def\maketag@@@#1{\if@RTL\hboxR\else\hboxL\fi{\m@th\normalfont#1}}
+\iftagsleft@
+  \def\@eqnnum{\hbox to1sp{}
+  \if@RTL
+    \llapR{\normalfont\normalcolor
+     \tagform@\theequation\hskip -\displaywidth}
+  \else
+     \rlapL{\normalfont\normalcolor
+      \hskip -\displaywidth\tagform@\theequation}
+    \fi}
+\else
+  \def\@eqnnum{{\normalfont\normalcolor \tagform@\theequation}}
+\fi
+\renewcommand{\numberwithin}[3][\arabic]{%
+  \@ifundefined{c@#2}{\@nocounterr{#2}}{%
+    \@ifundefined{c@#3}{\@nocnterr{#3}}{%
+      \@addtoreset{#2}{#3}%
+      \@xp\xdef\csname the#2\endcsname{%
+        \@xp\@nx\csname the#3\endcsname \@nx\@SepMark\@nx#1{#2}}}}%
+}
+
+\def\intertext@{%
+  \def\intertext##1{%
+    \ifvmode\else\\\@empty\fi
+    \noalign{%
+      \penalty\postdisplaypenalty\vskip\belowdisplayskip
+      \if@RTL\vboxR\else\vboxL\fi{\normalbaselines
+        \ifdim\linewidth=\columnwidth
+        \else \parshape\@ne \@totalleftmargin \linewidth
+        \fi
+        \noindent##1\par}%
+      \penalty\predisplaypenalty\vskip\abovedisplayskip%
+    }%
+}}
+
+
+\def\multline@#1{%
+    \Let@
+    \@display@init{\global\advance\row@\@ne \global\dspbrk@lvl\m@ne}%
+    \chardef\dspbrk@context\z@
+    \restore@math@cr
+    \let\tag\tag@in@align
+    \global\tag@false \global\let\raise@tag\@empty
+    \mmeasure@{#1}%
+    \let\tag\gobble@tag \let\label\@gobble
+% \tabskip \if@fleqn \@mathmargin \else \z@skip \fi
+    \tabskip \z@skip 
+    \totwidth@\displaywidth
+    \if@fleqn
+        \advance\totwidth@-\@mathmargin
+    \fi
+    \halign\bgroup
+        \hbox to\totwidth@{%
+            \if@fleqn
+                \hskip \@centering \relax
+            \else
+                \hfil
+            \fi
+            \strut@
+            $\m@th\displaystyle{}##\endmultline@math
+            \hfil
+        }%
+        \crcr
+        \if@fleqn
+            \hskip-\@mathmargin
+            \def\multline@indent{\hskip\@mathmargin}% put it back
+        \else
+            \hfilneg
+            \def\multline@indent{\hskip\multlinegap}%
+        \fi
+        \iftagsleft@
+            \iftag@
+                \begingroup
+                    \ifshifttag@
+                        \rlap{\vbox{%
+                                \normalbaselines
+                                \hbox{%
+                                    \strut@
+                                    \make@display@tag
+                                }%
+                                \vbox to\lineht@{}%
+                                \raise@tag
+                        }}%
+                        \multline@indent
+                    \else
+                        \setbox\z@\hbox{\make@display@tag}%
+                        \dimen@\@mathmargin \advance\dimen@-\wd\z@
+                        \ifdim\dimen@<\multlinetaggap
+                          \dimen@\multlinetaggap
+                        \fi
+                        \box\z@ \hskip\dimen@\relax
+                    \fi
+                \endgroup
+            \else
+                \multline@indent
+            \fi
+        \else
+            \multline@indent
+        \fi
+    #1%
+}
+
+\def\math@cr@@@align{%
+  \ifst@rred\nonumber\fi
+  \if@eqnsw \global\tag@true \fi
+  \global\advance\row@\@ne
+  \add@amps\maxfields@
+  \omit
+  \kern-\alignsep@
+%  \iftag@
+%    \setboxz@h{\@lign\strut@{\make@display@tag}}%
+%    \place@tag
+%  \fi
+  \iftag@
+    \setboxz@h{\@lign\strut@{\make@display@tag}}%
+    \place@tag
+  \else
+    \place@tag
+  \fi
+  \ifst@rred\else\global\@eqnswtrue\fi
+  \global\lineht@\z@
+  \cr
+}
+
+
+\endinput

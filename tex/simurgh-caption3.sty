@@ -1,0 +1,7 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-caption3}[2013/09/18 v0.01a changes to `caption3.sty']
+
+\renewcommand*\caption@@par{%
+  \parindent\caption@parindent\hangindent\if@RTL\else -\fi\caption@hangindent}%
+
+\endinput

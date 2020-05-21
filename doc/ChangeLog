@@ -1,0 +1,25 @@
+2013-09-22  0.01b  Vafa Khalighi
+    * 0.01b
+    * Supported `letter.cls'
+    * Supported `memoir.cls'
+    * Supported `rapport1.cls'
+    * Supported `rapport3.cls'
+    * Supported `refrep.cls'
+    * Supported `report.cls'
+    * Supported `scrartcl.cls'
+    * Supported `scrbook.cls'
+    * Supported `scrlettr.cls'
+    * Supported `scrreprt.cls'
+    * Fixed equation numbers.
+    * Fixed bad margin of `multline' environment of `amsmath' package with
+      `fleqn' option.
+    * Fixed bad positioning of `align*' environment.
+    * Fixed `\intertext' command of `amsmath' package.
+    * Better `\llap' and `\rlap' macros.
+    * Updated `simurgh-empheq.sty'.
+    
+2013-09-18  0.01a  Vafa Khalighi
+    * 0.01a
+    * First version of `simurgh' package released; this version provides basic
+      functionality for Parsi typesetting in LaTeX2e, using the LuaTeX engine.
+      

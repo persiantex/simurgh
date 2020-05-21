@@ -1,0 +1,668 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-ltx}[2013/09/18 v0.01a changes to `latex.ltx']
+\newif\if@RTLtab
+\newif\if@RTLmarginpar
+\newif\if@LTRmarginpar
+\newif\if@LTRbibitems
+\newif\if@RTLbibitems
+
+\def\SepMark#1{\gdef\@SepMark{\if@RTL‏\fi#1\if@RTL‏\fi}}
+\SepMark{.}
+\def\CaptionLabelSep#1{\gdef\@CaptionLabelSep{\if@RTL‏\fi#1\if@RTL‏\fi}}
+\CaptionLabelSep{:}
+
+\def\setRTLbibitems{\@RTLbibitemstrue\@LTRbibitemsfalse}
+\def\setLTRbibitems{\@LTRbibitemstrue\@RTLbibitemsfalse}
+\def\setdefaultbibitems{\@RTLbibitemsfalse\@LTRbibitemsfalse}
+
+\def\setRTLmarginpar{\@RTLmarginpartrue\@LTRmarginparfalse}
+\def\setLTRmarginpar{\@LTRmarginpartrue\@RTLmarginparfalse}
+\def\setdefaultmarginpar{\@RTLmarginparfalse\@LTRmarginparfalse}
+
+\let\simurgh@TeX\TeX
+\def\TeX{\ensurelatintext{\simurgh@TeX}}
+\let\simurgh@LaTeX\LaTeX
+\def\LaTeX{\ensurelatintext{\simurgh@LaTeX}}
+\let\simurgh@LaTeXe\LaTeXe
+\def\LaTeXe{\ensurelatintext{\simurgh@LaTeXe}}
+
+\def\RTLcases#1{\left\}\vcenter{\normalbaselines\m@th
+    \ialign{$##\hfil$&\quad{##}\hfil\crcr#1\crcr}}\,\right\.}
+
+\def\@thmcountersep{\@SepMark}
+
+\def\@mklab#1{\hfil \if@RTL\hboxR\else\hboxL\fi{#1}}
+
+\def\list#1#2{%
+  \ifnum \@listdepth >5\relax
+    \@toodeep
+  \else
+    \global\advance\@listdepth\@ne
+  \fi
+  \rightmargin\z@
+  \listparindent\z@
+  \itemindent\z@
+  \csname @list\romannumeral\the\@listdepth\endcsname
+  \def\@itemlabel{#1}%
+  \let\makelabel\@mklab
+  \@nmbrlistfalse
+  #2\relax
+  \@trivlist
+  \parskip\parsep
+  \parindent\listparindent
+  \advance\linewidth -\rightmargin
+  \advance\linewidth -\leftmargin
+    \if@RTL%
+      \advance\@totalleftmargin \leftmargin%
+    \else%
+      \advance\@totalleftmargin \rightmargin%
+    \fi%
+  \parshape \@ne \@totalleftmargin \linewidth
+  \ignorespaces}
+  
+  
+  
+\def\@item[#1]{%
+  \if@noparitem
+    \@donoparitem
+  \else
+    \if@inlabel
+      \indent \par
+    \fi
+    \ifhmode
+      \unskip\unskip \par
+    \fi
+    \if@newlist
+      \if@nobreak
+        \@nbitem
+      \else
+        \addpenalty\@beginparpenalty
+        \addvspace\@topsep
+        \addvspace{-\parskip}%
+      \fi
+    \else
+      \addpenalty\@itempenalty
+      \addvspace\itemsep
+    \fi
+    \global\@inlabeltrue
+  \fi
+  \everypar{%
+    \@minipagefalse
+    \global\@newlistfalse
+    \if@inlabel
+      \global\@inlabelfalse
+      {\setbox\z@\lastbox
+       \ifvoid\z@
+         \kern-\itemindent
+       \fi}%
+      \box\@labels
+      \penalty\z@
+    \fi
+    \if@nobreak
+      \@nobreakfalse
+      \clubpenalty \@M
+    \else
+      \clubpenalty \@clubpenalty
+      \everypar{}%
+    \fi}%
+  \if@noitemarg
+    \@noitemargfalse
+    \if@nmbrlist
+      \refstepcounter\@listctr
+    \fi
+  \fi
+  \ensuresboxdir\@tempboxa{\makelabel{#1}}%
+  \if@RTL%
+  \global\setbox\@labels\hbox dir TRT{%
+    \unhbox\@labels
+    \hskip \itemindent
+    \hskip -\labelwidth
+    \hskip -\labelsep
+    \ifdim \wd\@tempboxa >\labelwidth
+      \box\@tempboxa
+    \else
+      \hbox to\labelwidth {\unhbox\@tempboxa}%
+    \fi
+    \hskip \labelsep}%
+    \else%
+      \global\setbox\@labels\hbox dir TLT{%
+    \unhbox\@labels
+    \hskip \itemindent
+    \hskip -\labelwidth
+    \hskip -\labelsep
+    \ifdim \wd\@tempboxa >\labelwidth
+      \box\@tempboxa
+    \else
+      \hbox to\labelwidth {\unhbox\@tempboxa}%
+    \fi
+    \hskip \labelsep}%
+    \fi%
+  \ignorespaces}
+  
+  
+\long\def\@iiiparbox#1#2[#3]#4#5{%
+  \leavevmode
+  \@pboxswfalse
+  \setlength\@tempdima{#4}%
+  \@begin@tempboxa\vbox{\hsize\@tempdima\@parboxrestore#5\@@par}%
+    \ifx\relax#2\else
+      \setlength\@tempdimb{#2}%
+      \edef\@parboxto{to\the\@tempdimb}%
+    \fi
+    \if#1b\vbox
+    \else\if #1t\vtop
+    \else\ifmmode\vcenter
+    \else\@pboxswtrue \if@RTL\mathdir TRT\fi$\vcenter
+    \fi\fi\fi
+    \@parboxto{\let\hss\vss\let\unhbox\unvbox
+       \csname bm@#3\endcsname}%
+    \if@pboxsw \m@th$\fi
+  \@end@tempboxa}
+  
+\newenvironment{LTRitems}
+                 {\par\@RTLfalse%
+                   \pardir TLT%
+                   \textdir TLT%
+                   \parshape \@ne \dimexpr(\@totalleftmargin-\leftmargin) \linewidth%
+                   \ignorespaces}{\vskip\z@}
+
+\newenvironment{RTLitems}
+                 {\par\@RTLtrue%
+                   \pardir TRT%
+                   \textdir TRT%
+                   \parshape \@ne \dimexpr(\@totalleftmargin+\leftmargin) \linewidth%
+                   \ignorespaces}{\vskip\z@}                   
+                   
+                   
+\newenvironment{latinitems}{\begin{LTRitems}\reset@latinfont}{\end{LTRitems}}
+\newenvironment{parsiitems}{\begin{RTLitems}\reset@parsifont}{\end{RTLitems}}
+
+\let\simurgh@raggedleft\raggedleft
+\let\simurgh@raggedright\raggedright
+\def\raggedleft{%
+  \if@RTL%
+    \simurgh@raggedright%
+  \else%
+    \simurgh@raggedleft%
+  \fi}
+\def\raggedright{%
+  \if@RTL%
+    \simurgh@raggedleft%
+  \else%
+    \simurgh@raggedright%
+  \fi}
+
+
+\def\leftline#1{%
+  \if@RTL%
+    \@@line{\hss#1}%
+  \else%
+    \ifvmode%
+      \@@line{\hss#1}%
+    \else%
+       \@@line{#1\hss}%
+  \fi%
+\fi%
+}
+
+\def\rightline#1{%
+  \if@RTL%
+    \@@line{#1\hss}%
+  \else%
+    \ifvmode%
+      \@@line{#1\hss}%
+    \else%
+       \@@line{\hss#1}%
+  \fi%
+\fi%
+}
+
+% here we redefine \rlap and \llap so that right means `at the end of line' and left means `at the beggining of the line'
+% independent of the mode (RTL or LTR) we are in. this way, we make sure that specific macros that has to deal with
+% `at the beginning of the line' or `at the end of the line' still works correctly and there is no need to modify them.
+\def\rlapR#1{\hbox to \z@{\textdir TRT #1\hss}}
+\def\rlapL#1{\hbox dir TLT to \z@{\textdir TLT #1\hss}}
+\def\llapR#1{\hbox to \z@{\hss \textdir TRT #1}}
+\def\llapL#1{\hbox dir TLT to \z@{\hss \textdir TLT #1}}
+\def\llap#1{\if@RTL\llapR{#1}\else\llapL{#1}\fi}
+\def\rlap#1{\if@RTL\rlapR{#1}\else\rlapL{#1}\fi} 
+
+%  logical \llap and \rlap macros
+
+\def\simurghllap#1{\if@RTL\rlapR{#1}\else\llapL{#1}\fi}
+\def\simurghrlap#1{\if@RTL\llapR{#1}\else\rlapL{#1}\fi}
+
+  
+\def\@hangfrom#1{\setbox\@tempboxa\hbox{{#1}}%
+      \hangindent%
+        \if@RTL%
+        \else%
+          -%
+        \fi%
+      \wd\@tempboxa\noindent\box\@tempboxa}
+      
+\def\bm@l{\if@RTL\hss\unhbox\@tempboxa\else\unhbox\@tempboxa\hss\fi}
+\def\bm@r{\if@RTL\unhbox\@tempboxa\hss\else\hss\unhbox\@tempboxa\fi}
+\def\bm@t{\unhbox\@tempboxa\hss}
+\def\bm@b{\hss\unhbox\@tempboxa}
+
+
+\def\LTRmarginpar{%
+  \ifhmode
+    \@bsphack
+    \@floatpenalty -\@Mii
+  \else
+    \@floatpenalty-\@Miii
+  \fi
+  \ifinner
+    \@parmoderr
+    \@floatpenalty\z@
+  \else
+    \@next\@currbox\@freelist{}{}%
+    \@next\@marbox\@freelist{\global\count\@marbox\m@ne}%
+       {\@floatpenalty\z@
+        \@fltovf\def\@currbox{\@tempboxa}\def\@marbox{\@tempboxa}}%
+  \fi
+  \@ifnextchar [\@LTRxmpar\@LTRympar}
+\long\def\@LTRxmpar[#1]#2{%
+  \@LTRsavemarbox\@marbox{#1}%
+  \@LTRsavemarbox\@currbox{#2}%
+  \@xympar}
+\long\def\@LTRympar#1{%
+  \@LTRsavemarbox\@marbox{#1}%
+  \global\setbox\@currbox\copy\@marbox
+  \@xympar}
+\long\def \@LTRsavemarbox #1#2{%
+  \global\setbox #1%
+    \color@vbox
+      \vtop dir TLT{%
+        \@RTLfalse%
+        \hsize\marginparwidth
+        \@parboxrestore
+        \@LTRmarginparreset
+        #2%
+        \@minipagefalse
+        \outer@nobreak
+        }%
+    \color@endbox
+}
+
+\def \@LTRmarginparreset {%
+        \reset@latinfont
+        \normalsize
+        \@setminipage
+}
+
+\def\RTLmarginpar{%
+  \ifhmode
+    \@bsphack
+    \@floatpenalty -\@Mii
+  \else
+    \@floatpenalty-\@Miii
+  \fi
+  \ifinner
+    \@parmoderr
+    \@floatpenalty\z@
+  \else
+    \@next\@currbox\@freelist{}{}%
+    \@next\@marbox\@freelist{\global\count\@marbox\m@ne}%
+       {\@floatpenalty\z@
+        \@fltovf\def\@currbox{\@tempboxa}\def\@marbox{\@tempboxa}}%
+  \fi
+  \@ifnextchar [\@RTLxmpar\@RTLympar}
+\long\def\@RTLxmpar[#1]#2{%
+  \@RTLsavemarbox\@marbox{#1}%
+  \@RTLsavemarbox\@currbox{#2}%
+  \@xympar}
+\long\def\@RTLympar#1{%
+  \@RTLsavemarbox\@marbox{#1}%
+  \global\setbox\@currbox\copy\@marbox
+  \@xympar}
+\long\def \@RTLsavemarbox #1#2{%
+  \global\setbox #1%
+    \color@vbox
+      \vtop dir TRT{%
+        \@RTLtrue%
+        \hsize\marginparwidth
+        \@parboxrestore
+        \@RTLmarginparreset
+        #2%
+        \@minipagefalse
+        \outer@nobreak
+        }%
+    \color@endbox
+}
+
+\def \@RTLmarginparreset {%
+        \reset@parsifont
+        \normalsize
+        \@setminipage
+}
+
+\def \@marginparreset {%
+        \if@Latin%
+          \reset@latinfont%
+        \else%
+          \reset@parsifont%
+        \fi%
+        \reset@font
+        \normalsize
+        \@setminipage
+}
+
+
+\def\hb@xt@addmarginpar@{%
+  \if@RTL%
+    \if@LTRmarginpar%
+      \hbox dir TLT to%
+    \else%
+      \hbox dir TRT to%
+    \fi%
+  \else%
+    \if@RTLmarginpar%
+      \hbox dir TRT to%
+    \else%
+      \hbox dir TLT to%
+    \fi%
+  \fi}
+  
+\def\vtop@addmarginpar{%
+  \if@RTL%
+    \if@LTRmarginpar%
+      \vtop dir TLT%
+    \else%
+      \vtop dir TRT%
+    \fi%
+  \else%
+    \if@RTLmarginpar%
+      \vtop dir TRT%
+    \else%
+      \vtop dir TLT%
+    \fi%
+  \fi}
+  
+  
+\def\@addmarginpar{\@next\@marbox\@currlist{\@cons\@freelist\@marbox
+    \@cons\@freelist\@currbox}\@latexbug\@tempcnta\@ne
+    \if@twocolumn
+        \if@firstcolumn \@tempcnta\m@ne \fi
+    \else
+      \if@mparswitch
+         \ifodd\c@page \else\@tempcnta\m@ne \fi
+      \fi
+      \if@reversemargin \@tempcnta -\@tempcnta \fi
+    \fi
+    \ifnum\@tempcnta <\z@  \global\setbox\@marbox\box\@currbox \fi
+    \@tempdima\@mparbottom
+    \advance\@tempdima -\@pageht
+    \advance\@tempdima\ht\@marbox
+    \ifdim\@tempdima >\z@
+      \@latex@warning@no@line {Marginpar on page \thepage\space moved}%
+    \else
+      \@tempdima\z@
+    \fi
+    \global\@mparbottom\@pageht
+    \global\advance\@mparbottom\@tempdima
+    \global\advance\@mparbottom\dp\@marbox
+    \global\advance\@mparbottom\marginparpush
+    \advance\@tempdima -\ht\@marbox
+    \global\setbox \@marbox
+                   \vbox {\vskip \@tempdima
+                          \box \@marbox}%
+    \global \ht\@marbox \z@
+    \global \dp\@marbox \z@
+    \kern -\@pagedp
+    \nointerlineskip
+    \hb@xt@addmarginpar@\columnwidth
+      {\ifnum \@tempcnta >\z@
+          \hskip\columnwidth \hskip\marginparsep
+       \else
+          \hskip -\marginparsep \hskip -\marginparwidth
+       \fi
+       \box\@marbox \hss}%
+    \nointerlineskip
+    \hbox{\vrule \@height\z@ \@width\z@ \@depth\@pagedp}}
+    
+\long\def \@savemarbox #1#2{%
+  \global\setbox #1%
+    \color@vbox
+      \vtop@addmarginpar{%
+        \hsize\marginparwidth
+        \@parboxrestore
+        \@marginparreset
+        #2%
+        \@minipagefalse
+        \outer@nobreak
+        }%
+    \color@endbox
+}
+
+\gdef\@stopline{%
+  \unskip
+  \@stopfield
+  \if@rjfield
+    \global\@rjfieldfalse
+    \@tempdima\@totalleftmargin
+    \advance\@tempdima\linewidth
+    \hb@xt@\@tempdima{%
+      \@itemfudge\hskip\dimen\@curtabmar
+      \box\@curline
+      \hfil
+      \box\@curfield}%
+  \else
+    \@addfield
+    \hb@xt@\linewidth{\@itemfudge\hskip\dimen\@curtabmar\box\@curline\hfil}%
+  \fi}
+  
+  
+\def\LTR@outputdblcol{%
+  \if@firstcolumn
+    \global \@firstcolumnfalse
+    \global \setbox\@leftcolumn \box\@outputbox
+  \else
+    \global \@firstcolumntrue
+    \setbox\@outputbox \vbox dir TLT {%
+                         \hb@xt@\textwidth {%
+                           \hb@xt@\columnwidth {%
+                             \box\@leftcolumn \hss}%
+                           \hfil
+                           {\normalcolor\vrule \@width\columnseprule}%
+                           \hfil
+                           \hb@xt@\columnwidth {%
+                             \box\@outputbox \hss}%
+                                             }%
+                              }%
+    \@combinedblfloats
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi
+        {\@outputpage
+         \@startdblcolumn}%
+    \endgroup
+  \fi
+}
+
+\def\RTL@outputdblcol{%
+  \if@firstcolumn
+    \global \@firstcolumnfalse
+    \global \setbox\@leftcolumn \box\@outputbox
+  \else
+    \global \@firstcolumntrue
+    \setbox\@outputbox \vbox dir TRT {%
+                         \hb@xt@\textwidth {%
+                           \hb@xt@\columnwidth {%
+                             \box\@leftcolumn \hss}%
+                           \hfil
+                           {\normalcolor\vrule \@width\columnseprule}%
+                           \hfil
+                           \hb@xt@\columnwidth {%
+                             \box\@outputbox \hss}%
+                                             }%
+                              }%
+    \@combinedblfloats
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi
+        {\@outputpage
+         \@startdblcolumn}%
+    \endgroup
+  \fi
+}  
+  
+
+
+\newcommand*{\RTLdblcol}{\renewcommand*{\@outputdblcol}{\RTL@outputdblcol}}
+\newcommand*{\LTRdblcol}{\renewcommand*{\@outputdblcol}{\LTR@outputdblcol}}
+
+\def\@outputpage{%
+\begingroup           % the \endgroup is put in by \aftergroup
+  \let \protect \noexpand
+  \@resetactivechars
+  \global\let\@@if@newlist\if@newlist
+  \global\@newlistfalse
+  \@parboxrestore
+  \shipout \vbox{%
+    \set@typeset@protect
+    \aftergroup \endgroup
+    \aftergroup \set@typeset@protect
+                                % correct? or just restore by ending
+                                % the group?
+  \if@specialpage
+    \global\@specialpagefalse\@nameuse{ps@\@specialstyle}%
+  \fi
+  \if@twoside
+    \ifodd\count\z@ \let\@thehead\@oddhead \let\@thefoot\@oddfoot
+         \let\@themargin\oddsidemargin
+    \else \let\@thehead\@evenhead
+       \let\@thefoot\@evenfoot \let\@themargin\evensidemargin
+    \fi
+  \fi
+  \if@RTLmain%
+    \reset@parsifont%
+  \else%
+    \reset@latinfont%
+  \fi%
+  \normalsize
+  \normalsfcodes
+  \let\label\@gobble
+  \let\index\@gobble
+  \let\glossary\@gobble
+  \baselineskip\z@skip \lineskip\z@skip \lineskiplimit\z@
+    \@begindvi
+    \vskip \topmargin
+    \moveright\@themargin \vbox {%
+      \setbox\@tempboxa \vbox to\headheight{%
+        \vfil
+        \color@hbox
+          \normalcolor
+          \hb@xt@\textwidth{\@thehead}%
+        \color@endbox
+        }%                        %% 22 Feb 87
+      \dp\@tempboxa \z@
+      \box\@tempboxa
+      \vskip \headsep
+      \box\@outputbox
+      \baselineskip \footskip
+      \color@hbox
+        \normalcolor
+        \hb@xt@\textwidth{\@thefoot}%
+      \color@endbox
+      }%
+    }%
+  \global\let\if@newlist\@@if@newlist
+  \global \@colht \textheight
+  \stepcounter{page}%
+  \let\firstmark\botmark
+}
+
+\global\@RTLtabfalse
+\def\@tabular{\if@RTL\@RTLtabtrue\fi%
+  \leavevmode \hbox \bgroup $\let\@acol\@tabacol
+   \let\@classz\@tabclassz
+   \let\@classiv\@tabclassiv \let\\\@tabularcr\@tabarray}
+\def\endtabular{\crcr\egroup\egroup $\egroup\@RTLtabfalse}
+\expandafter \let \csname endtabular*\endcsname = \endtabular
+\def\@array[#1]#2{%
+  \if #1t\vtop \else \if#1b\vbox \else \vcenter \fi\fi
+  \bgroup
+  \setbox\@arstrutbox\hbox{%
+    \vrule \@height\arraystretch\ht\strutbox
+           \@depth\arraystretch \dp\strutbox
+           \@width\z@}%
+  \@mkpream{#2}%
+  \edef\@preamble{%
+    \ialign \noexpand\@halignto
+      \bgroup \@arstrut \@preamble \tabskip\z@skip \cr}%
+  \let\@startpbox\@@startpbox \let\@endpbox\@@endpbox
+  \let\tabularnewline\\%
+    \let\par\@empty
+    \let\@sharp##%
+    \set@typeset@protect
+    \lineskip\z@skip\baselineskip\z@skip
+    \ifhmode \@preamerr\z@ \@@par\fi
+    \if@RTLtab\textdir TRT\fi%
+    \@preamble}
+\def\array{\let\@acol\@arrayacol \let\@classz\@arrayclassz
+ \let\@classiv\@arrayclassiv
+ \let\\\@arraycr\let\@halignto\@empty\@RTLtabfalse\@tabarray}
+\def\@testpach#1{\@chclass \ifnum \@lastchclass=\tw@ 4 \else
+    \ifnum \@lastchclass=3 5 \else
+     \z@ \if #1c\@chnum \z@ \else
+                              \if \if@RTLtab#1r\else#1l\fi\@chnum \@ne \else
+                              \if \if@RTLtab#1l\else#1r\fi\@chnum \tw@ \else
+          \@chclass \if #1|\@ne \else
+                    \if #1@\tw@ \else
+                    \if #1p3 \else \z@ \@preamerr 0\fi
+  \fi  \fi  \fi  \fi  \fi  \fi
+\fi}
+
+
+\DeclareRobustCommand\Latincite{%
+  \@ifnextchar [{\@tempswatrue\@Latincitex}{\@tempswafalse\@Latincitex[]}}
+\def\@Latincitex[#1]#2{\leavevmode
+  \let\@citea\@empty
+  \@cite{\textLatin{\@for\@citeb:=#2\do
+    {\@citea\def\@citea{,\penalty\@m\ }%
+     \edef\@citeb{\expandafter\@firstofone\@citeb\@empty}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
+     \@ifundefined{b@\@citeb}{\hbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning
+         {Citation `\@citeb' on page \thepage \space undefined}}%
+       {\@cite@ofmt{\csname b@\@citeb\endcsname}}}}}{#1}}
+
+
+
+
+
+\RequirePackage{simurgh-footnotes}
+\if@twocolumn
+  \let\autofootnoterule\relax
+  \let\leftfootnoterule\relax
+  \let\rightfootnoterule\relax
+  \textwidthfootnoterule
+\fi
+
+
+% math macros
+\everydisplay\expandafter{\the\everydisplay\predisplaydirection\z@}
+\@ifpackageloaded{amsmath}{}{%
+\def\endequation{\eqno \if@RTL\hboxR\else\hboxL\fi{\@eqnnum}$$\@ignoretrue}}
+\def\@@eqncr{\let\reserved@a\relax
+    \ifcase\@eqcnt \def\reserved@a{& & &}\or \def\reserved@a{& &}%
+     \or \def\reserved@a{&}\else
+       \let\reserved@a\@empty
+       \@latex@error{Too many columns in eqnarray environment}\@ehc\fi
+     \reserved@a \if@eqnsw\if@RTL\hboxR\else\hboxL\fi{\@eqnnum}\stepcounter{equation}\fi
+     \global\@eqnswtrue\global\@eqcnt\z@\cr}
+
+
+
+\simurgh@newrobustcmd*{\parsirq}{«}
+\simurgh@newrobustcmd*{\parsilq}{»}
+
+\endinput

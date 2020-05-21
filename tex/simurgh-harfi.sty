@@ -1,0 +1,10 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-harfi}[2013/09/18 v0.01a harfi counter]
+
+\def\@harfi#1{\ifcase#1\or آ‍\or ب\or پ\or ت\or ث\or
+ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or ژ\or س\or ش\or ص\or ض\or ط\or ظ\or ع\or غ\or
+ف\or ق\or ک\or گ\or ل\or م\or ن\or و\or ه\or ی\else\@ctrerr\fi}
+\def\harfi#1{\expandafter\@harfi\csname c@#1\endcsname}
+\let\harfinumeral\@harfi
+
+\endinput

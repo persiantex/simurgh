@@ -1,0 +1,93 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh}[2013/09/22 v0.01b parsi typesetting]
+\RequirePackage{xkeyval}
+\RequirePackage{simurgh-tools}
+\RequirePackage{simurgh-chkeng}
+\RequirePackage{simurgh-shellescape}
+\RequirePackage{fontspec}
+\RequirePackage{simurgh-fonts}
+\RequirePackage{simurgh-jalalical}
+\RequirePackage{simurgh-mathdigitspec}
+\RequirePackage{simurgh-bidi}
+\RequirePackage{simurgh-unibidi}
+\RequirePackage{simurgh-cptns}
+\RequirePackage{simurgh-counters}
+\RequirePackage{simurgh-ltx}
+\RequirePackage{simurgh-tags}
+\RequirePackage{simurgh-clss}
+\RequirePackage{simurgh-pkgs}
+\RequirePackage{simurgh-loader}
+
+
+\define@choicekey{simurgh.sty}{maindirection}[\simurgh@tempa\simurgh@tempb]{righttoleft,lefttoright}{%
+  \ifcase\simurgh@tempb\relax
+    \@RTLtrue%
+    \pagedir TRT%
+    \bodydir TRT%
+    \pardir TRT%
+    \textdir TRT%
+  \or
+    \@RTLfalse%
+    \pagedir TLT%
+    \bodydir TLT%
+    \pardir TLT%
+    \textdir TLT%
+  \fi}
+
+\define@choicekey{simurgh.sty}{mathdirection}[\simurgh@tempa\simurgh@tempb]{righttoleft,lefttoright}{%
+  \ifcase\simurgh@tempb\relax
+    \mathdir TRT%
+  \or
+    \mathdir TLT%
+  \fi}
+  
+  
+\define@choicekey{simurgh.sty}{mathdigits}[\simurgh@tempa\simurgh@tempb]{automatic,default,parsi}{%
+  \ifcase\simurgh@tempb\relax
+    \AutoMathDigits%
+  \or
+    \DefaultMathDigits%
+  \or
+    \ParsiMathDigits%
+  \fi}
+
+\define@choicekey{simurgh.sty}{footnoterule}[\simurgh@tempa\simurgh@tempb]{automatic,left,right,split,textwidth}{%
+  \ifcase\simurgh@tempb\relax
+    \autofootnoterule%
+  \or
+    \leftfootnoterule%
+  \or
+    \rightfootnoterule%
+  \or
+    \SplitFootnoteRule%
+  \or
+    \textwidthfootnoterule%
+  \fi}
+  
+\define@choicekey{simurgh.sty}{footnotedirection}[\simurgh@tempa\simurgh@tempb]{righttoleft,lefttoright}{%
+  \ifcase\simurgh@tempb\relax
+    \@RTL@footnotetrue%
+  \or
+    \@RTL@footnotefalse%
+  \fi}
+  
+\define@choicekey{simurgh.sty}{debugfootnotedirection}[\simurgh@tempa\simurgh@tempb]{on,off}{%
+  \ifcase\simurgh@tempb\relax
+    \footdir@debugtrue
+  \or
+    \footdir@debugfalse
+  \fi}
+
+\DeclareOptionX{unicodebidi}{\simurgh@unibidi@setmode{#1}}
+
+\ExecuteOptionsX{%
+       maindirection=righttoleft,%
+       mathdirection=lefttoright,%
+       mathdigits=automatic,%
+       footnoterule=automatic,%
+       footnotedirection=righttoleft,%
+       debugfootnotedirection=off,%
+       unicodebidi=global%
+}
+\ProcessOptionsX
+\endinput

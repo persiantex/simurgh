@@ -1,0 +1,18 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-chkeng}[2013/09/18 v0.01a check typesetting engine]
+\RequirePackage{ifluatex}
+\ifluatex
+\else
+  \begingroup
+    \errorcontextlines=-1\relax
+    \newlinechar=10\relax
+    \errmessage{^^J
+    ********************************************^^J
+    * lualatex is required to compile this document.^^J
+    * sorry!^^J
+    ********************************************}%
+  \endgroup
+\fi
+
+
+\endinput

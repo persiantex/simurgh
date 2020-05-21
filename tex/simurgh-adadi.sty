@@ -1,0 +1,109 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-adadi}[2013/09/18 v0.01a adadi counter]
+\newcommand{\adadi}[1]{%
+\expandafter\@adadi\csname c@#1\endcsname%
+}
+\newcommand{\@adadi}[1]{%
+\simurgh@numberstring{#1}\simurgh@yekanii{صفر}{}%
+}
+\let\adadinumeral\@adadi%
+\def\simurgh@numberoutofrange#1#2{%
+\simurgh@error{The number `#1' is too large %
+to be formatted using simurgh}{The largest possible %
+number is 999,999,999.}%
+}
+\def\simurgh@numberstring#1#2#3#4{%
+\ifnum\number#1<\@ne%
+#3%
+\else\ifnum\number#1<1000000000 %
+\expandafter\simurgh@adadi\expandafter{\number#1}#2%
+\else%
+\simurgh@numberoutofrange{#1}{#4}%
+\fi\fi%
+}
+\def\simurgh@adadi#1#2{%
+\expandafter\simurgh@@adadi%
+\ifcase%
+\ifnum#1<10 1%
+\else\ifnum#1<100 2%
+\else\ifnum#1<\@m 3%
+\else\ifnum#1<\@M 4%
+\else\ifnum#1<100000 5%
+\else\ifnum#1<1000000 6%
+\else\ifnum#1<10000000 7%
+\else\ifnum#1<100000000 8%
+\else9%
+\fi\fi\fi\fi\fi\fi\fi\fi %
+\or00000000#1% case 1: Add 8 leading zeros
+\or0000000#1%  case 2: Add 7 leading zeros
+\or000000#1%   case 3: Add 6 leading zeros
+\or00000#1%    case 4: Add 5 leading zeros
+\or0000#1%     case 5: Add 4 leading zeros
+\or000#1%      case 6: Add 3 leading zeros
+\or00#1%       case 7: Add 2 leading zeros
+\or0#1%        case 8: Add 1 leading zero
+\or#1%         case 9: Add no leading zeros
+\or%
+\@nil#2%
+\fi%
+}
+\def\simurgh@@adadi#1#2#3#4#5#6#7\or#8\@nil#9{%
+\ifnum#1#2#3>\z@
+\simurgh@milyoongan#1#2#3%
+\ifnum#7>\z@\ifnum#4#5#6>\z@\ و \else\ و \fi\else\ifnum#4#5#6>\z@\ و \fi\fi%
+\fi%
+\ifnum#4#5#6>\z@%
+\simurgh@sadgan#4#5#6{#1#2#3}{#4#5}\simurgh@yekani%
+\ifnum#4#5#6>\@ne‌\fi%
+هزار%
+\ifnum#7>\z@\ و \fi%
+\fi%
+\simurgh@sadgan#7{#4#5#6}1#9%
+}
+\def\simurgh@milyoongan#1#2#3{%
+\ifnum#1#2#3=\@ne%
+\simurgh@sadgan#1#2#301\simurgh@yekaniii%
+‌%
+میلیون%
+\else%
+\simurgh@sadgan#1#2#301\simurgh@yekanii%
+‌%
+میلیون%
+\fi%
+}
+\def\simurgh@sadgan#1#2#3#4#5#6{%
+\ifnum#1>\z@%
+\ifnum#4#1>\@ne\simurgh@yekaniv#1\fi%
+صد%
+\ifnum#2#3>\z@\ و \fi%
+\fi%
+\ifnum#2#3<20%
+\ifnum#5#2#3>\@ne#6{#2#3}\fi%
+\else%
+\simurgh@dahgan#2%
+\ifnum#3>\z@\ و \simurgh@yekani#3\fi%
+#60%
+\fi%
+}
+\def\simurgh@yekani#1{%
+\ifcase#1\@empty\or یک\or دو\or سه\or چهار\or پنج\or شش%
+\or هفت\or هشت\or نه\or ده\or یازده\or دوازده\or سیزده%
+\or چهارده\or پانزده\or شانزده\or هفده%
+\or هجده\or نوزده\fi%
+}
+\def\simurgh@yekanii#1{%
+\ifcase#1\@empty\or یک\else\simurgh@yekani{#1}\fi%
+}
+\def\simurgh@yekaniii#1{%
+\ifcase#1\@empty\or یک\else\simurgh@yekani{#1}\fi%
+}
+\def\simurgh@yekaniv#1{%
+\ifcase#1\@empty\or\or دوی\or سی\or چهار\or پان\or شش%
+\or هفت\or هشت\or نه\fi%
+}
+\def\simurgh@dahgan#1{%
+\ifcase#1\or\or بیست\or سی\or چهل%
+\or پنجاه\or شصت\or هفتاد\or هشتاد%
+\or نود\fi%
+}
+\endinput

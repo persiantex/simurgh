@@ -1,0 +1,117 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-scrlettr}[2013/09/22 v0.01a changes to `scrlettr.cls']
+\renewcommand\deffootnote[4][]{%
+  \long\def\@makefntext##1{%
+    \edef\@tempa{#1}\ifx\@tempa\@empty
+      \@setpar{\@@par
+        \@tempdima = \hsize
+        \addtolength{\@tempdima}{-#2}
+        \if@RTL\parshape \@ne #2 \@tempdima\else\parshape \@ne \z@ \@tempdima\fi}%
+    \else
+      \@setpar{\@@par
+        \@tempdima = \hsize
+        \addtolength{\@tempdima}{-#1}
+        \@tempdimb = \hsize
+        \addtolength{\@tempdimb}{-#2}
+        \if@RTL\parshape \tw@ #1 \@tempdima #2 \@tempdimb\else\parshape \tw@ \z@ \@tempdima \z@ \@tempdimb\fi}%
+    \fi
+    \par
+    \parindent #3\noindent
+    \hbox to \z@{\hss\@@makefnmark}##1}
+  \def\@@makefnmark{\hbox{#4}}
+}
+\deffootnote[1em]{1.5em}{1em}
+  {\textsuperscript{\thefootnotemark}}
+\def\left@footnoterule{%
+ \hbox dir TLT to \columnwidth
+ {\vbox{\kern -3\p@
+ \kern-1\p@
+ \hrule width 0.4\columnwidth
+ \kern .6\p@}\hfil}}
+\def\right@footnoterule{%
+ \hbox dir TRT to \columnwidth
+ {\vbox{\kern -3\p@
+ \kern-1\p@
+ \hrule width 0.4\columnwidth
+ \kern .6\p@}\hfil}}
+\def\@datefield{\@reffalse
+ \ifx\varyourref\@empty \else \@reftrue \fi
+ \ifx\varyourmail\@empty \else \@reftrue \fi
+ \ifx\varmyref\@empty \else \@reftrue \fi
+ \ifx\varcustomer\@empty \else \@reftrue \fi
+ \ifx\varinvoice\@empty \else \@reftrue \fi
+ \ifx\varrefitemi\@empty \else \@reftrue \fi
+ \ifx\varrefitemii\@empty \else \@reftrue \fi
+ \ifx\varrefitemiii\@empty \else \@reftrue \fi
+ \vskip -\parskip
+ \vskip \refvskip
+ \if@ref
+  \ifx\varyourref\@empty \else
+   \settowidth{\sc@temp}{\varyourref}
+   \setbox0\hbox{\scriptsize \sf \yourrefname}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varyourref}\hfill
+  \fi
+  \ifx\varyourmail\@empty \else
+   \settowidth{\sc@temp}{\varyourmail}
+   \setbox0\hbox{\scriptsize \sf \yourmailname}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varyourmail}\hfill
+  \fi
+  \ifx\varmyref\@empty \else
+   \settowidth{\sc@temp}{\varmyref}
+   \setbox0\hbox{\scriptsize \sf \myrefname}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varmyref}\hfill
+  \fi
+  \ifx\varcustomer\@empty \else
+   \settowidth{\sc@temp}{\varcustomer}
+   \setbox0\hbox{\scriptsize \sf \customername}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varcustomer}\hfill
+  \fi
+  \ifx\varinvoice\@empty \else
+   \settowidth{\sc@temp}{\varinvoice}
+   \setbox0\hbox{\scriptsize \sf \invoicename}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varinvoice}\hfill
+  \fi
+  \ifx\varrefitemi\@empty \else
+   \settowidth{\sc@temp}{\varrefitemi}
+   \setbox0\hbox{\scriptsize \sf \varrefitemnamei}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varrefitemi}\hfill
+  \fi
+  \ifx\varrefitemii\@empty \else
+   \settowidth{\sc@temp}{\varrefitemii}
+   \setbox0\hbox{\scriptsize \sf \varrefitemnameii}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varrefitemii}\hfill
+  \fi
+  \ifx\varrefitemiii\@empty \else
+   \settowidth{\sc@temp}{\varrefitemiii}
+   \setbox0\hbox{\scriptsize \sf \varrefitemnameiii}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \varrefitemiii}\hfill
+  \fi
+  \ifx\@date\@empty \else
+   \settowidth{\sc@temp}{\@date}
+   \setbox0\hbox{\scriptsize \sf \datename}
+   \ifdim \sc@temp > \wd0 \sc@@temp\sc@temp \else \sc@@temp\wd0 \fi
+   \parbox[t]{\sc@@temp}{\noindent \box0\par \@date}
+  \fi
+  \par
+  \vspace{2.5\baselineskip}
+ \else
+  {\ifx\@date\@empty \else \simurgh@raggedleft\fromplace\ \@date\par \fi}
+  \vspace{1.5\baselineskip}
+ \fi}
+\long\def\closing#1{\par\nobreak\vspace{0.5\baselineskip}
+ \stopbreaks \noindent \sc@temp\textwidth \advance\sc@temp by
+ -\sigindent \hspace{\sigindent}%
+ \parbox{\sc@temp}{\simurgh@raggedright\ignorespaces #1\mbox{}\\[\presig@skip]
+ \fromsig\strut}\par
+ \vspace{1.5\baselineskip}}
+
+
+\endinput

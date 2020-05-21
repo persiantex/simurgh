@@ -1,0 +1,13 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-leqno}[2013/09/22 v0.01a leqno]
+\renewcommand\@eqnnum{\hb@xt@.01\p@{}%
+                     \if@RTL
+                       \llapR{\normalfont\normalcolor
+                        (\theequation)\hskip -\displaywidth}
+                      \else
+                         \rlapL{\normalfont\normalcolor
+                          \hskip -\displaywidth(\theequation)}
+                        \fi}
+
+
+\endinput

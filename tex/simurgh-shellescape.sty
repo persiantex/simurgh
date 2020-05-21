@@ -1,0 +1,10 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-shellescape}[2013/09/18 v0.01a shellescape]
+\RequirePackage{pdftexcmds}
+\newif\ifwritexviii
+\ifnum\pdf@shellescape=1\relax
+  \writexviiitrue
+\else
+\writexviiifalse
+\fi
+\endinput

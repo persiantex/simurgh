@@ -1,0 +1,328 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-scrbook}[2013/09/22 v0.01a changes to `scrbook.cls']
+\newcommand{\scr@saved@LTRfootnotetext}{}
+\newcommand{\scr@saved@RTLfootnotetext}{}
+\let\scr@saved@footnotetext\@footnotetext
+\let\scr@saved@LTRfootnotetext\@LTRfootnotetext
+\let\scr@saved@RTLfootnotetext\@RTLfootnotetext
+\renewcommand{\@footnotetext}[1]{%
+  \scr@saved@footnotetext{#1}%
+  \csname FN@mf@prepare\endcsname
+}
+\renewcommand{\@LTRfootnotetext}[1]{%
+  \scr@saved@LTRfootnotetext{#1}%
+  \csname FN@mf@prepare\endcsname
+}
+\renewcommand{\@RTLfootnotetext}[1]{%
+  \scr@saved@RTLfootnotetext{#1}%
+  \csname FN@mf@prepare\endcsname
+}
+\renewcommand\deffootnote[4][]{%
+  \long\def\@makefntext##1{%
+    \setlength{\@tempdimc}{#3}%
+    \def\@tempa{#1}\ifx\@tempa\@empty
+      \@setpar{\@@par
+        \@tempdima = \hsize
+        \addtolength{\@tempdima}{-#2}%
+        \if@RTL\parshape \@ne #2 \@tempdima\else\parshape \@ne \z@ \@tempdima\fi}%
+    \else
+      \addtolength{\@tempdimc}{#2}%
+      \addtolength{\@tempdimc}{-#1}%
+      \@setpar{\@@par
+        \@tempdima = \hsize
+        \addtolength{\@tempdima}{-#1}%
+        \@tempdimb = \hsize
+        \addtolength{\@tempdimb}{-#2}%
+        \if@RTL\parshape \tw@ #1 \@tempdima #2 \@tempdimb\else\parshape \tw@ \z@ \@tempdima \z@ \@tempdimb\fi
+      }%
+    \fi
+    \par
+    \parindent\@tempdimc\noindent
+    \ftn@font\hbox to \z@{\hss\@@makefnmark}##1%
+  }%
+  \def\@@makefnmark{\hbox{\ftnm@font{#4}}}%
+}
+\deffootnote[1em]{1.5em}{1em}{\textsuperscript{\thefootnotemark}}
+\renewcommand*\left@footnoterule{%
+  \hbox dir TLT to \columnwidth
+  {\vbox{\kern -3\p@
+  \normalsize\ftn@rule@test@values
+  \kern-\dimexpr 2.6\p@+\ftn@rule@height\relax
+  \ifx\@textbottom\relax\else\vskip \z@ \@plus.05fil\fi
+  {\usekomafont{footnoterule}{%
+      \hrule \@height\ftn@rule@height \@width\ftn@rule@width}}%
+  \kern 2.6\p@}\hfil}}
+\renewcommand*\right@footnoterule{%
+  \hbox dir TRT to \columnwidth
+  {\vbox{\kern -3\p@
+  \normalsize\ftn@rule@test@values
+  \kern-\dimexpr 2.6\p@+\ftn@rule@height\relax
+  \ifx\@textbottom\relax\else\vskip \z@ \@plus.05fil\fi
+  {\usekomafont{footnoterule}{%
+      \hrule \@height\ftn@rule@height \@width\ftn@rule@width}}%
+  \kern 2.6\p@}\hfil}}
+
+
+\def\raggedsection{\simurgh@raggedright}
+\renewcommand*\autodot{\if@altsecnumformat\@SepMark\fi}
+\renewcommand*\thesection{%
+  \ifnum \scr@compatibility>\@nameuse{scr@v@2.97d}\relax
+    \if@mainmatter\thechapter\@SepMark\fi
+  \else
+  \thechapter\@SepMark%
+  \fi
+  \@arabic\c@section
+}
+\renewcommand*{\thesubsection}{\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand*{\thesubsubsection}{%
+  \thesubsection\@SepMark\@arabic\c@subsubsection
+}
+\renewcommand*{\theparagraph}{\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand*{\thesubparagraph}{%
+  \theparagraph\@SepMark\@arabic\c@subparagraph
+}
+\renewcommand*\thefigure{%
+  \ifnum \scr@compatibility>\@nameuse{scr@v@2.97d}\relax
+    \if@mainmatter\thechapter\@SepMark\fi
+  \else
+  \thechapter\@SepMark%
+  \fi
+  \@arabic\c@figure
+}
+\renewcommand*\thetable{%
+  \ifnum \scr@compatibility>\@nameuse{scr@v@2.97d}\relax
+    \if@mainmatter\thechapter\@SepMark\fi
+  \else
+  \thechapter\@SepMark%
+  \fi
+  \@arabic\c@table
+}
+\renewcommand*\theequation{%
+  \ifnum \scr@compatibility>\@nameuse{scr@v@2.97d}\relax
+    \if@mainmatter\thechapter\@SepMark\fi
+  \else
+  \thechapter\@SepMark%
+  \fi
+  \@arabic\c@equation
+}
+
+\renewenvironment{thebibliography}[1]{%
+  \if@bib@break@
+    \bib@beginhook
+  \else
+    \ifx\bibpreamble\relax\else\ifx\bibpreamble\@empty\else
+        \setchapterpreamble{\bibpreamble}%
+    \fi\fi
+    \bib@heading
+    \bib@beginhook
+    \bib@before@hook
+  \fi
+  \renewcommand{\BreakBibliography}[1]{%
+    \@bib@break
+    \end{thebibliography}%
+    \begingroup ##1\endgroup
+    \begin{thebibliography}{#1}
+  }%
+  \if@RTL%
+    \if@LTRbibitems%
+      \@RTLfalse%
+      \pardir TLT%
+      \textdir TLT%
+    \fi%
+  \else%
+    \if@RTLbibitems%
+      \@RTLtrue%
+      \pardir TRT%
+      \textdir TRT%
+    \fi%
+  \fi%
+  \list{%
+    \@biblabel{\@arabic\c@enumiv}%
+  }{%
+    \settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \@openbib@code
+    \if@bib@break@
+      \edef\@tempa{%
+        \noexpand\usecounter{enumiv}%
+        \noexpand\setcounter{enumiv}{\the\c@enumiv}%
+      }\@tempa
+      \no@bib@break
+    \else
+      \usecounter{enumiv}%
+    \fi
+    \let\p@enumiv\@empty
+    \renewcommand*\theenumiv{\@arabic\c@enumiv}%
+  }%
+  \sloppy\clubpenalty4000 \widowpenalty4000
+  \sfcode`\.=\@m
+}{%
+  \if@bib@break@
+    \def\@noitemerr{%
+      \@latex@warning{%
+        \string\BreakBibliography\space at begin of `thebibliography'
+        environment\MessageBreak
+        or following \string\BreakBibliography}%
+    }%
+  \else
+    \def\@noitemerr{%
+      \@latex@warning{%
+        Empty `thebibliography' environment or
+        \string\BreakBibliography\MessageBreak
+        before end of `thebibliography' environment}%
+    }%
+  \fi
+  \endlist
+  \if@bib@break@
+  \else
+    \bib@after@hook
+    \let\bib@before@hook\@empty
+    \let\bib@after@hook\@empty
+  \fi
+  \bib@endhook
+}
+
+\renewcommand*\left@footnoterule{%
+  \hbox dir TLT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \ifx\@textbottom\relax\else\vskip \z@ \@plus.05fil\fi
+  \hrule\@width.4\columnwidth
+  \kern 2.6\p@}\hfil}}
+\renewcommand*\right@footnoterule{%
+  \hbox dir TRT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \ifx\@textbottom\relax\else\vskip \z@ \@plus.05fil\fi
+  \hrule\@width.4\columnwidth
+  \kern 2.6\p@}\hfil}}
+\renewcommand*{\raggeddictum}{\simurgh@raggedleft}
+\renewcommand*{\raggeddictumtext}{\simurgh@raggedright}
+\renewcommand*{\raggeddictumauthor}{\simurgh@raggedleft}
+\renewcommand\marginline[1]{%
+  \marginpar[\simurgh@raggedleft{#1}]{\simurgh@raggedright #1}%
+}
+
+\renewcommand{\@@makecaption}[3]{%
+  \cap@margin
+  \ifonelinecaptions
+    \@tempcnta=\value{mpfootnote}\@tempcntb=\value{footnote}%
+    \let\scr@tmp@footnotetext=\@footnotetext
+    \let\@footnotetext=\@gobble
+    \let\scr@tmp@LTRfootnotetext=\@LTRfootnotetext
+    \let\@LTRfootnotetext=\@gobble
+    \let\scr@tmp@RTLfootnotetext=\@RTLfootnotetext
+    \let\@RTLfootnotetext=\@gobble
+    \sbox\@tempboxa{%
+      {\capfont{\strut\ignorespaces
+        #1{{\caplabelfont{#2\captionformat}}}%
+        #3\unskip\strut}}%
+    }%
+    \let\@footnotetext=\scr@tmp@footnotetext
+    \let\scr@tmp@footnotetext=\undefined
+    \let\@LTRfootnotetext=\scr@tmp@LTRfootnotetext
+    \let\scr@tmp@LTRfootnotetext=\undefined
+    \let\@RTLfootnotetext=\scr@tmp@RTLfootnotetext
+    \let\scr@tmp@RTLfootnotetext=\undefined
+    \setcounter{footnote}{\@tempcntb}%
+    \setcounter{mpfootnote}{\@tempcnta}%
+  \else
+    \sbox\@tempboxa{\hspace*{2\cap@width}}%
+  \fi
+  \begingroup%
+    \setlength{\@tempdima}{\cap@width}%
+    \ifdim \wd\@tempboxa >\@tempdima
+      \hb@xt@\hsize{%
+        \setbox\@tempboxa\vbox{\hsize=\cap@width
+          \ifdofullc@p
+            {\capfont{\@hangfrom{\scr@smashdp{\strut\ignorespaces
+                  #1{{\caplabelfont{#2\captionformat}}}}}%
+              {#3\unskip\strut\par}}}%
+          \else%
+            \ifdim\cap@indent<\z@
+              {\capfont{\strut\ignorespaces
+                #1{{\caplabelfont{#2\captionformat\par}}}%
+                \noindent\hspace*{-\cap@indent}#3\unskip\strut\par}}%
+            \else%
+              \if@capbreak
+                {\capfont{\strut\ignorespaces
+                  #1{{\caplabelfont{#2\captionformat\par}}}%
+                  \noindent\@hangfrom{\hspace*{\cap@indent}}{#3\par}}}%
+              \else
+                {\capfont{\@hangfrom{\scr@smashdp\strut\hspace*{\cap@indent}}%
+                  {\hspace{-\cap@indent}\scr@smashdp{\ignorespaces#1%
+                    {{\caplabelfont{#2\captionformat}}}}#3\unskip\strut\par}}}%
+              \fi
+            \fi
+          \fi
+        }%
+        \setlength{\@tempdima}{\ht\@tempboxa}%
+        \addtolength{\@tempdima}{\dp\@tempboxa}%
+        \addtolength{\@tempdima}{-\ht\strutbox}%
+        \ht\@tempboxa\ht\strutbox
+        \dp\@tempboxa\@tempdima
+        \strut\cap@left
+        \box\@tempboxa
+        \cap@right\strut
+      }%
+    \else
+      \global \@minipagefalse
+      \sbox\@tempboxa{%
+        {\capfont{\scr@smashdp{\strut\ignorespaces
+          #1{{\caplabelfont{#2\captionformat}}}}%
+          #3}}%
+      }%
+      {\capfont{\hb@xt@\hsize{\strut\cap@left\box\@tempboxa\cap@right\strut}}}%
+    \fi
+  \endgroup
+}
+\renewcommand{\@makecaption}[2]{%
+  \if@captionabove
+    \vskip\belowcaptionskip
+  \else
+    \vskip\abovecaptionskip
+  \fi
+  \@@makecaption\@firstofone{#1}{#2}%
+  \if@captionabove
+    \vskip\abovecaptionskip
+  \else
+    \vskip\belowcaptionskip
+  \fi
+}
+
+\renewcommand*\frontmatter{%
+  \if@twoside\cleardoubleoddpage\else\clearpage\fi
+  \@mainmatterfalse\pagenumbering{harfi}%
+}
+\renewcommand*{\thepart}{\@tartibi\c@part}
+\renewcommand*\appendix{\par%
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}%
+  \csname appendixmore\endcsname
+}
+\renewcommand*{\@@maybeautodot}[1]{%
+  \ifx #1\@stop\let\@@maybeautodot\relax
+  \else
+    \ifx #1\harfi \@autodottrue\fi
+    \ifx #1\adadi \@autodottrue\fi
+    \ifx #1\tartibi \@autodottrue\fi
+    \ifx #1\Alph \@autodottrue\fi
+    \ifx #1\alph \@autodottrue\fi
+    \ifx #1\Roman \@autodottrue\fi
+    \ifx #1\roman \@autodottrue\fi
+    \ifx #1\@harfi \@autodottrue\fi
+    \ifx #1\@adadi \@autodottrue\fi
+    \ifx #1\@tartibi \@autodottrue\fi
+    \ifx #1\@Alph \@autodottrue\fi
+    \ifx #1\@alph \@autodottrue\fi
+    \ifx #1\@Roman \@autodottrue\fi
+    \ifx #1\@roman \@autodottrue\fi
+    \ifx #1\romannumeral \@autodottrue\fi
+  \fi
+  \@@maybeautodot
+}
+
+\endinput

@@ -1,0 +1,9 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-amstext}[2013/09/22 v0.01a changes to `amstext.sty']
+\def\textdef@#1#2#3{\if@RTL\hboxR\else\hboxL\fi{{%
+                    \everymath{#1}%
+                    \let\f@size#2\selectfont
+                    #3}}}
+
+
+\endinput

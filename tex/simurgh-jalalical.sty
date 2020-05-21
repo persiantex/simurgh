@@ -1,0 +1,176 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-jalalical}[2013/09/18 v0.01a jalali calendar]
+%  jalali calendar needs to be done entirely in lua
+\newif\ifsimurgh@leap \newif\ifsimurgh@kabiseh
+\newcount\simurgh@i  \newcount\simurgh@year  \newcount\simurgh@month  \newcount\simurgh@day
+\newcount\simurgh@latini    \newcount\simurgh@jalalii
+\newcount\simurgh@latinii   \newcount\simurgh@jalaliii
+\newcount\simurgh@latiniii  \newcount\simurgh@jalaliiii
+\newcount\simurgh@latiniv   \newcount\simurgh@jalaliiv
+\newcount\simurgh@latinv    \newcount\simurgh@jalaliv
+\newcount\simurgh@latinvi   \newcount\simurgh@jalalivi
+\newcount\simurgh@latinvii  \newcount\simurgh@jalalivii
+\newcount\simurgh@latinviii \newcount\simurgh@jalaliviii
+\newcount\simurgh@latinix   \newcount\simurgh@jalaliix
+\newcount\simurgh@latinx    \newcount\simurgh@jalalix
+\newcount\simurgh@latinxi   \newcount\simurgh@jalalixi
+\newcount\simurgh@latinxii  \newcount\simurgh@jalalixii
+                       \newcount\simurgh@jalalixiii
+
+\newcount\simurgh@temp
+\newcount\simurgh@temptwo
+\newcount\simurgh@tempthree
+\newcount\simurgh@yearModHundred
+\newcount\simurgh@thirtytwo
+\newcount\simurgh@dayn
+\newcount\simurgh@sn
+\newcount\simurgh@monthminusone
+
+\simurgh@year=\year \simurgh@month=\month \simurgh@day=\day
+\simurgh@temp=\simurgh@year
+\divide\simurgh@temp by 100\relax
+\multiply\simurgh@temp by 100\relax
+\simurgh@yearModHundred=\simurgh@year
+\advance\simurgh@yearModHundred by -\simurgh@temp\relax
+\ifodd\simurgh@yearModHundred
+   \simurgh@leapfalse
+\else
+   \simurgh@temp=\simurgh@yearModHundred
+   \divide\simurgh@temp by 2\relax
+   \ifodd\simurgh@temp\simurgh@leapfalse
+   \else
+      \ifnum\simurgh@yearModHundred=0%
+         \simurgh@temp=\simurgh@year
+         \divide\simurgh@temp by 400\relax
+         \multiply\simurgh@temp by 400\relax
+         \ifnum\simurgh@year=\simurgh@temp\simurgh@leaptrue\else\simurgh@leapfalse\fi
+      \else\simurgh@leaptrue
+      \fi
+   \fi
+\fi
+\simurgh@latini=31\relax
+\ifsimurgh@leap
+  \simurgh@latinii = 29\relax
+\else
+  \simurgh@latinii = 28\relax
+\fi
+\simurgh@latiniii = 31\relax
+\simurgh@latiniv  = 30\relax
+\simurgh@latinv = 31\relax
+\simurgh@latinvi = 30\relax
+\simurgh@latinvii = 31\relax
+\simurgh@latinviii = 31\relax
+\simurgh@latinix = 30\relax
+\simurgh@latinx = 31\relax
+\simurgh@latinxi = 30\relax
+\simurgh@latinxii = 31\relax
+\simurgh@thirtytwo=32\relax
+\simurgh@temp=\simurgh@year
+\advance\simurgh@temp by -17\relax
+\simurgh@temptwo=\simurgh@temp
+\divide\simurgh@temptwo by 33\relax
+\multiply\simurgh@temptwo by 33\relax
+\advance\simurgh@temp by -\simurgh@temptwo
+\ifnum\simurgh@temp=\simurgh@thirtytwo\simurgh@kabisehfalse
+\else
+   \simurgh@temptwo=\simurgh@temp
+   \divide\simurgh@temptwo by 4\relax
+   \multiply\simurgh@temptwo by 4\relax
+   \advance\simurgh@temp by -\simurgh@temptwo
+   \ifnum\simurgh@temp=\z@\simurgh@kabisehtrue\else\simurgh@kabisehfalse\fi
+\fi
+\simurgh@tempthree=\simurgh@year                 % Number of Leap years
+\advance\simurgh@tempthree by -1
+\simurgh@temp=\simurgh@tempthree              % T := (MY-1) div 4
+\divide\simurgh@temp by 4\relax
+\simurgh@temptwo=\simurgh@tempthree           % T := T - ((MY-1) div 100)
+\divide\simurgh@temptwo by 100\relax
+\advance\simurgh@temp by -\simurgh@temptwo
+\simurgh@temptwo=\simurgh@tempthree           % T := T + ((MY-1) div 400)
+\divide\simurgh@temptwo by 400\relax
+\advance\simurgh@temp by \simurgh@temptwo
+\advance\simurgh@tempthree by -611       % Number of Kabise years
+\simurgh@temptwo=\simurgh@tempthree           % T := T - ((SY+10) div 33) * 8
+\divide\simurgh@temptwo by 33\relax
+\multiply\simurgh@temptwo by 8\relax
+\advance\simurgh@temp by -\simurgh@temptwo
+\simurgh@temptwo=\simurgh@tempthree           %
+\divide\simurgh@temptwo by 33\relax
+\multiply\simurgh@temptwo by 33\relax
+\advance\simurgh@tempthree by -\simurgh@temptwo
+\ifnum\simurgh@tempthree=32\advance\simurgh@temp by 1\fi % if (SY+10) mod 33=32 then Inc(T);
+\divide\simurgh@tempthree by 4\relax     % T := T - ((SY+10) mod 33) div 4
+\advance\simurgh@temp by -\simurgh@tempthree
+\advance\simurgh@temp by -137            % T := T - 137  Adjust the value
+\simurgh@jalalii=31
+\advance\simurgh@jalalii by -\simurgh@temp                 % now 31 - T is the jalalii
+\simurgh@jalaliii = 30\relax
+\ifsimurgh@kabiseh
+  \simurgh@jalaliiii = 30\relax
+\else
+  \simurgh@jalaliiii = 29\relax
+\fi
+\simurgh@jalaliiv  = 31\relax
+\simurgh@jalaliv   = 31\relax
+\simurgh@jalalivi  = 31\relax
+\simurgh@jalalivii = 31\relax
+\simurgh@jalaliviii= 31\relax
+\simurgh@jalaliix  = 31\relax
+\simurgh@jalalix   = 30\relax
+\simurgh@jalalixi  = 30\relax
+\simurgh@jalalixii = 30\relax
+\simurgh@jalalixiii= 30\relax
+\simurgh@dayn= 0\relax
+\simurgh@sn= 0\relax
+\simurgh@monthminusone=\simurgh@month
+\advance\simurgh@monthminusone by -1\relax
+\simurgh@i=0\relax
+\ifnum\simurgh@i < \simurgh@monthminusone
+\loop
+\advance \simurgh@i by 1\relax
+\advance\simurgh@dayn by \csname simurgh@latin\romannumeral\the\simurgh@i\endcsname
+\ifnum\simurgh@i<\simurgh@monthminusone \repeat
+\fi
+\advance \simurgh@dayn by \simurgh@day
+\simurgh@i=1\relax
+\simurgh@sn = \simurgh@jalalii
+\ifnum \simurgh@sn<\simurgh@dayn
+\loop
+\advance \simurgh@i by 1\relax
+\advance\simurgh@sn by \csname simurgh@jalali\romannumeral\the\simurgh@i\endcsname
+\ifnum \simurgh@sn<\simurgh@dayn \repeat
+\fi
+\ifnum \simurgh@i < 4
+   \simurgh@month = 9 \advance\simurgh@month by \simurgh@i
+   \advance \simurgh@year by -622\relax
+\else
+   \simurgh@month = \simurgh@i \advance \simurgh@month by -3\relax
+   \advance \simurgh@year by -621\relax
+\fi
+\advance\simurgh@sn by -\csname simurgh@jalali\romannumeral\the\simurgh@i%
+\endcsname
+\ifnum\simurgh@i = 1
+  \simurgh@day = \simurgh@dayn \advance \simurgh@day by 30 \advance\simurgh@day by -\simurgh@jalalii
+\else
+  \simurgh@day = \simurgh@dayn \advance \simurgh@day by -\simurgh@sn
+\fi
+\newcommand*{\jalalitoday}{%
+\number\simurgh@day\space%
+\simurgh@jalali@month{\simurgh@month}\space\number\simurgh@year%
+}
+\let\jalaliyear\simurgh@year
+\let\jalalimonth\simurgh@month
+\let\jalaliday\simurgh@day
+\def\simurgh@jalali@month#1{\ifcase#1\or فروردین\or
+اردیبهشت\or
+خرداد\or تیر\or
+مرداد\or
+شهریور\or مهر\or
+آبان\or آذر\or
+دی\or بهمن\or
+اسفند\fi}
+
+\let\simurgh@ltx@today\today
+\def\gregoriantoday{\ensurelatintext{\simurgh@ltx@today}}
+\def\today{\ensureparsitext{\jalalitoday}}
+\endinput

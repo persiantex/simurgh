@@ -1,0 +1,17 @@
+The simurgh package
+=================
+
+The `simurgh' package provides an automatic and unified interface for
+Parsi typesetting in LaTeX, using the LuaTeX engine.
+
+See the documentation `simurgh-doc.pdf` for full information.
+
+
+License
+----------
+
+Copyright 2013 Vafa Khalighi <persian-tex@tug.org>
+
+Permission is granted to copy, distribute and/or modify
+all files of this package under the terms of the GNU Public License, 
+Version 2 or any later version published by the Free Software Foundation.

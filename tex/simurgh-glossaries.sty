@@ -1,0 +1,79 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-glossaries}[2013/09/18 v0.01a changes to `glossaries.sty']
+\newcommand*{\gls@harfipage}{\@harfi\c@page}
+\newcommand*{\gls@tartibipage}{\@tartibi\c@page}
+\newcommand*{\gls@adadipage}{\@adadi\c@page}
+\renewcommand{\gls@protected@pagefmts}{%
+  \gls@numberpage,\gls@alphpage,\gls@Alphpage,\gls@romanpage,\gls@Romanpage,\gls@harfipage,\gls@tartibipage,\gls@adadipage%
+}
+\renewcommand*{\@@do@wrglossary}[1]{%
+  \begingroup
+   \let\orgthe\the
+    \let\orgnumber\number
+    \let\orgromannumeral\romannumeral
+    \let\orgalph\@alph
+    \let\orgAlph\@Alph
+    \let\orgRoman\@Roman
+    \let\orgharfi\@harfi
+    \let\orgadadi\@adadi
+    \let\orgtartibi\@tartibi
+    \def\the##1{%
+      \ifx##1\c@page \gls@numberpage\else\orgthe##1\fi}%
+    \def\number##1{%
+      \ifx##1\c@page \gls@numberpage\else\orgnumber##1\fi}%
+    \def\romannumeral##1{%
+      \ifx##1\c@page \gls@romanpage\else\orgromannumeral##1\fi}%
+     \def\@Roman##1{%
+       \ifx##1\c@page \gls@Romanpage\else\orgRoman##1\fi}%
+    \def\@alph##1{%
+      \ifx##1\c@page \gls@alphpage\else\orgalph##1\fi}%
+    \def\@Alph##1{%
+      \ifx##1\c@page \gls@Alphpage\else\orgAlph##1\fi}%
+    \def\@harfi##1{%
+      \ifx##1\c@page \gls@harfipage\else\orgharfi##1\fi}%
+     \def\@adadi##1{%
+      \ifx##1\c@page \gls@adadipage\else\orgadadi##1\fi}%
+     \def\@tartibi##1{%
+      \ifx##1\c@page \gls@tartibipage\else\orgtartibi##1\fi}%
+    \gls@disablepagerefexpansion
+    \protected@xdef\@glslocref{\theglsentrycounter}%
+  \endgroup
+  \@gls@checkmkidxchars\@glslocref
+  \expandafter\ifx\theHglsentrycounter\theglsentrycounter
+    \def\@glo@counterprefix{}%
+  \else
+    \protected@edef\@glsHlocref{\theHglsentrycounter}%
+    \@gls@checkmkidxchars\@glsHlocref
+    \edef\@do@gls@getcounterprefix{\noexpand\@gls@getcounterprefix
+      {\@glslocref}{\@glsHlocref}%
+    }%
+    \@do@gls@getcounterprefix
+  \fi
+  \ifglsxindy
+    \expandafter\@glo@check@mkidxrangechar\@glsnumberformat\@nil
+    \def\@glo@range{}%
+    \expandafter\if\@glo@prefix(\relax
+      \def\@glo@range{:open-range}%
+    \else
+      \expandafter\if\@glo@prefix)\relax
+        \def\@glo@range{:close-range}%
+      \fi
+    \fi
+    \glossary[\csname glo@#1@type\endcsname]{%
+    (indexentry :tkey (\csname glo@#1@index\endcsname)
+      :locref \string"{\@glo@counterprefix}{\@glslocref}\string" %
+      :attr \string"\@gls@counter\@glo@suffix\string"
+      \@glo@range
+    )
+    }%
+  \else
+    \@set@glo@numformat{\@glo@numfmt}{\@gls@counter}{\@glsnumberformat}%
+      {\@glo@counterprefix}%
+    \glossary[\csname glo@#1@type\endcsname]{%
+    \string\glossaryentry{\csname glo@#1@index\endcsname
+      \@gls@encapchar\@glo@numfmt}{\@glslocref}}%
+  \fi
+}
+
+
+\endinput

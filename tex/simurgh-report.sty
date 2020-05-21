@@ -1,0 +1,90 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-report}[2013/09/22 v0.01a changes to `report.cls']
+\renewcommand\left@footnoterule{%
+  \hbox dir TLT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \hrule\@width.4\columnwidth
+  \kern2.6\p@}\hfil}}
+\renewcommand\right@footnoterule{%
+  \hbox dir TRT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \hrule\@width.4\columnwidth
+  \kern2.6\p@}\hfil}}
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\def\@makechapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \simurgh@raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+        \huge\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \simurgh@raggedright
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par\nobreak
+    \vskip 40\p@
+  }}
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \if@RTL%
+        \if@LTRbibitems%
+          \@RTLfalse%
+          \pardir TLT%
+          \textdir TLT%
+        \fi%
+      \else%
+        \if@RTLbibitems%
+          \@RTLtrue%
+          \pardir TRT%
+          \textdir TRT%
+        \fi%
+      \fi%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+      
+      
+\renewcommand \thepart {\@tartibi\c@part}
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+
+
+\endinput

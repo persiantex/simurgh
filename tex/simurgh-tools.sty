@@ -1,0 +1,507 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-tools}[2013/09/18 v0.01a programming tools]
+\providecommand{\@simurgh@saveprimitive}[2]{\begingroup\escapechar`\\\relax
+  \edef\@tempa{\string#1}\edef\@tempb{\meaning#1}%
+  \ifx\@tempa\@tempb \global\let#2#1%
+  \else
+    \edef\@tempb{\meaning#2}%
+    \ifx\@tempa\@tempb
+    \else
+      \@latex@error{Unable to properly define \string#2; primitive
+      \noexpand#1no longer primitive}\@eha
+    \fi
+  \fi
+  \endgroup}
+\def\eqnewif#1#2{%
+  \count@\escapechar \escapechar\m@ne
+    \let#1\iffalse
+    \let#2\iffalse
+    \eq@if#1#2\iftrue
+    \eq@if#1#2\iffalse
+  \escapechar\count@}
+\def\eq@if#1#2#3{%
+  \expandafter\def\csname\expandafter\@gobbletwo\string#1%
+                    \expandafter\@gobbletwo\string#3\endcsname
+                       {\let#1#3%
+                       \let#2#3}%
+  \expandafter\def\csname\expandafter\@gobbletwo\string#2%
+                    \expandafter\@gobbletwo\string#3\endcsname
+                       {\let#2#3%
+                       \let#1#3}}
+\newcommand*{\if@simurgh@csdef}[1]{%
+  \ifcsname#1\endcsname
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+\newcommand*{\if@simurgh@csundef}[1]{%
+  \ifcsname#1\endcsname
+    \expandafter\ifx\csname#1\endcsname\relax
+      \expandafter\expandafter
+      \expandafter\@firstoftwo
+    \else
+      \expandafter\expandafter
+      \expandafter\@secondoftwo
+    \fi
+  \else
+    \expandafter\@firstoftwo
+  \fi}
+\newcommand{\if@simurgh@def}[1]{%
+  \ifdefined#1%
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+\newcommand{\if@simurgh@undef}[1]{%
+  \ifdefined#1%
+    \ifx#1\relax
+      \expandafter\expandafter
+      \expandafter\@firstoftwo
+    \else
+      \expandafter\expandafter
+      \expandafter\@secondoftwo
+    \fi
+  \else
+    \expandafter\@firstoftwo
+  \fi}
+\newcommand{\if@simurgh@blank}[1]{% from url.sty
+  \simurgh@ifblank@i#1&&\@secondoftwo\@firstoftwo:}
+\long\def\simurgh@ifblank@i#1#2&#3#4#5:{#4}
+\newcommand{\simurgh@notblank}[1]{%
+  \simurgh@ifblank@i#1&&\@firstoftwo\@secondoftwo:}
+\newcommand{\if@simurgh@defmacro}{}
+\long\edef\if@simurgh@defmacro#1{%
+  \noexpand\expandafter\noexpand\simurgh@ifdefmacro
+  \noexpand\meaning#1\detokenize{macro}:&}
+\edef\simurgh@ifdefmacro{%
+  \def\noexpand\simurgh@ifdefmacro##1\detokenize{macro}:##2&}
+\simurgh@ifdefmacro{\simurgh@notblank{#2}}
+\newcommand*{\if@simurgh@csmacro}[1]{%
+  \if@simurgh@csdef{#1}
+    {\expandafter\if@simurgh@defmacro\csname#1\endcsname}
+    {\@secondoftwo}}
+\newcommand{\if@simurgh@defprimitive}[1]{%
+  \ifpdfprimitive#1%
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+\newcommand{\if@simurgh@csprimitive}[1]{%
+ \begingroup\expandafter\expandafter\expandafter\endgroup%
+  \expandafter\ifpdfprimitive\csname#1\endcsname%
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+\newcommand*{\simurgh@csdefcs}[2]{%
+\expandafter\@ifdefinable  \csname#1\endcsname{%
+\expandafter\def\csname#1\expandafter\endcsname{\csname#2\endcsname}}}
+\newcommand*{\simurgh@csletcs}[2]{%
+\expandafter\@ifdefinable  \csname#1\endcsname{%
+\expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}}
+\newcommand*{\simurgh@cslet}[2]{%
+\expandafter\@ifdefinable  \csname#1\endcsname{%
+\expandafter\let\csname#1\endcsname#2}}
+\newcommand{\simurgh@namelongdef}[1]{%
+  \long\expandafter\def\csname #1\endcsname}
+
+
+\protected\def\simurgh@error{\PackageError{simurgh}}
+\protected\def\simurgh@warning{\PackageWarning{simurgh}}
+\protected\def\simurgh@info{\PackageInfo{simurgh}}
+
+\newcommand*{\simurgh@newrobustcmd}{}
+\protected\def\simurgh@newrobustcmd{\@star@or@long\simurgh@new@command}
+
+\def\simurgh@new@command#1{\@testopt{\simurgh@newcommand#1}0}
+
+\def\simurgh@newcommand#1[#2]{%
+  \@ifnextchar[%]
+    {\simurgh@xargdef#1[#2]}
+    {\ifx\l@ngrel@x\relax
+       \let\l@ngrel@x\protected
+     \else
+       \protected\def\l@ngrel@x{\protected\long}%
+     \fi
+     \@argdef#1[#2]}}
+
+\long\def\simurgh@xargdef#1[#2][#3]#4{%
+  \@ifdefinable#1{%
+    \expandafter\protected
+    \expandafter\def
+    \expandafter#1%
+    \expandafter{%
+      \expandafter\@testopt
+      \csname\string#1\endcsname{#3}}%
+    \expandafter\@yargdef\csname\string#1\endcsname\tw@{#2}{#4}}}
+
+\simurgh@newrobustcmd*{\simurgh@renewrobustcmd}{\@star@or@long\simurgh@renew@command}
+
+\def\simurgh@renew@command#1{%
+  \if@simurgh@undef{#1}
+     {\simurgh@error{\string#1 undefined}\@ehc}
+     {}%
+  \let\@ifdefinable\@rc@ifdefinable
+  \simurgh@new@command#1}
+
+\simurgh@newrobustcmd*{\@tagextension}{clo}
+\simurgh@newrobustcmd*{\@iftagloaded}{\@ifl@aded\@tagextension}
+
+\simurgh@newrobustcmd*{\simurgh@providerobustcmd}{\@star@or@long\simurgh@provide@command}
+
+\def\simurgh@provide@command#1{%
+  \if@simurgh@undef{#1}
+    {\def\reserved@a{\simurgh@new@command#1}}
+    {\def\reserved@a{\simurgh@renew@command\reserved@a}}%
+  \reserved@a}
+
+\newcommand*{\simurgh@csuse}[1]{%
+  \ifcsname#1\endcsname
+    \csname#1\expandafter\endcsname
+  \fi}
+
+\newcommand{\simurgh@expandonce}[1]{%
+  \unexpanded\expandafter{#1}}
+
+\def\simurgh@protected{%
+  \let\@@protect\protect
+  \let\protect\@unexpandable@protect
+  \afterassignment\restore@protect}
+
+\simurgh@newrobustcmd{\simurgh@appto}[2]{%
+  \if@simurgh@undef{#1}
+    {\edef#1{\unexpanded{#2}}}
+    {\edef#1{\simurgh@expandonce#1\unexpanded{#2}}}}
+\simurgh@newrobustcmd{\simurgh@eappto}[2]{%
+  \if@simurgh@undef{#1}
+    {\edef#1{#2}}
+    {\edef#1{\simurgh@expandonce#1#2}}}
+\simurgh@newrobustcmd{\simurgh@gappto}[2]{%
+  \if@simurgh@undef{#1}
+    {\xdef#1{\unexpanded{#2}}}
+    {\xdef#1{\simurgh@expandonce#1\unexpanded{#2}}}}
+\simurgh@newrobustcmd{\simurgh@xappto}[2]{%
+  \if@simurgh@undef{#1}
+    {\xdef#1{#2}}
+    {\xdef#1{\simurgh@expandonce#1#2}}}
+
+\simurgh@newrobustcmd*{\simurgh@protected@eappto}{\simurgh@protected\simurgh@eappto}
+\simurgh@newrobustcmd*{\simurgh@protected@xappto}{\simurgh@protected\simurgh@xappto}
+
+\simurgh@newrobustcmd{\simurgh@preto}[2]{%
+  \if@simurgh@undef{#1}
+    {\edef#1{\unexpanded{#2}}}
+    {\edef#1{\unexpanded{#2}\simurgh@expandonce#1}}}
+\simurgh@newrobustcmd{\simurgh@epreto}[2]{%
+  \if@simurgh@undef{#1}
+    {\edef#1{#2}}
+    {\edef#1{#2\simurgh@expandonce#1}}}
+\simurgh@newrobustcmd{\simurgh@gpreto}[2]{%
+  \if@simurgh@undef{#1}
+    {\xdef#1{\unexpanded{#2}}}
+    {\xdef#1{\unexpanded{#2}\simurgh@expandonce#1}}}
+\simurgh@newrobustcmd{\simurgh@xpreto}[2]{%
+  \if@simurgh@undef{#1}
+    {\xdef#1{#2}}
+    {\xdef#1{#2\simurgh@expandonce#1}}}
+
+\simurgh@newrobustcmd*{\simurgh@protected@epreto}{\simurgh@protected\simurgh@epreto}
+\simurgh@newrobustcmd*{\simurgh@protected@xpreto}{\simurgh@protected\simurgh@xpreto}
+
+\simurgh@newrobustcmd*{\simurgh@csappto}[1]{\expandafter\simurgh@appto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@cseappto}[1]{\expandafter\simurgh@eappto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@csgappto}[1]{\expandafter\simurgh@gappto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@csxappto}[1]{\expandafter\simurgh@xappto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@protected@cseappto}{\simurgh@protected\simurgh@cseappto}
+\simurgh@newrobustcmd*{\simurgh@protected@csxappto}{\simurgh@protected\simurgh@csxappto}
+
+\simurgh@newrobustcmd*{\simurgh@cspreto}[1]{\expandafter\simurgh@preto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@csepreto}[1]{\expandafter\simurgh@epreto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@csgpreto}[1]{\expandafter\simurgh@gpreto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@csxpreto}[1]{\expandafter\simurgh@xpreto\csname#1\endcsname}
+\simurgh@newrobustcmd*{\simurgh@protected@csepreto}{\simurgh@protected\simurgh@csepreto}
+\simurgh@newrobustcmd*{\simurgh@protected@csxpreto}{\simurgh@protected\simurgh@csxpreto}
+
+\simurgh@newrobustcmd{\if@simurgh@patchable}{%
+  \simurgh@dbg@trce\if@simurgh@patchable
+  \begingroup
+  \@makeother\#%
+  \@ifstar\simurgh@ifpatchable@i\simurgh@ifpatchable}
+
+\long\def\simurgh@ifpatchable#1#2{%
+  \endgroup
+  \simurgh@dbg@init#1%
+  \if@simurgh@undef{#1}
+    {\simurgh@dbg@fail{def}\@secondoftwo}
+    {\simurgh@dbg@info{def}%
+     \if@simurgh@defmacro{#1}
+       {\simurgh@dbg@info{mac}%
+        \simurgh@ifscanable{#1}
+          {\simurgh@ifhashcheck{#2}
+             {\simurgh@dbg@info{tok}%
+              \simurgh@ifpattern#1{#2}
+                 {\simurgh@dbg@info{pat}%
+                  \simurgh@dbg@info{pos}\@firstoftwo}
+                 {\simurgh@dbg@fail{pat}\@secondoftwo}}
+             {\simurgh@dbg@fail{hsh}\@secondoftwo}}
+          {\simurgh@dbg@fail{tok}\@secondoftwo}}
+       {\simurgh@dbg@fail{mac}\@secondoftwo}}}
+
+\long\def\simurgh@ifpatchable@i#1{%
+  \endgroup
+  \simurgh@dbg@init#1%
+  \if@simurgh@undef{#1}
+    {\simurgh@dbg@fail{def}\@secondoftwo}
+    {\simurgh@dbg@info{def}%
+     \if@simurgh@defmacro{#1}
+       {\simurgh@dbg@info{mac}%
+        \if@simurgh@defparam{#1}
+          {\simurgh@dbg@info{prm}%
+           \simurgh@ifscanable{#1}
+             {\simurgh@dbg@info{tok}%
+              \simurgh@dbg@info{pos}\@firstoftwo}
+             {\simurgh@dbg@fail{tok}\@secondoftwo}}
+          {\simurgh@dbg@info{prl}%
+           \if@simurgh@defprotected{#1}
+             {\simurgh@dbg@info{pro}}
+             {}%
+           \simurgh@dbg@info{pos}\@firstoftwo}}
+       {\simurgh@dbg@fail{mac}\@secondoftwo}}}
+
+\simurgh@newrobustcmd*{\simurgh@patchcmd}{%
+  \simurgh@dbg@trce\simurgh@patchcmd
+  \begingroup
+  \@makeother\#%
+  \simurgh@@patchcmd}
+
+\newcommand{\simurgh@@patchcmd}[4][########1]{%
+  \simurgh@ifpatchable#2{#3}
+    {\simurgh@dbg@succ{ret}%
+     \begingroup
+     \edef\simurgh@resrvda{%
+       \def\noexpand\simurgh@resrvda####1\detokenize{macro:}####2->####3&{%
+         #1\def\string\simurgh@resrvda\space####2{\noexpand\simurgh@resrvdb####3&}}%
+       \def\noexpand\simurgh@resrvdb####1\detokenize{#3}####2&{%
+         ####1\detokenize{#4}####2}%
+       \edef\noexpand\simurgh@resrvda{%
+         \noexpand\simurgh@resrvda\meaning#2&}}%
+     \simurgh@resrvda
+     \simurgh@patchcmd@scantoks\simurgh@resrvda
+     \let#2\simurgh@resrvda
+     \simurgh@undef\simurgh@resrvda
+     \@firstoftwo}
+    {\@secondoftwo}}
+
+\def\simurgh@patchcmd@scantoks#1{%
+  \edef\simurgh@resrvda{\endgroup
+    \unexpanded{\makeatletter\scantokens}{#1}%
+    \catcode\number`\@=\the\catcode`\@\relax}%
+  \simurgh@resrvda}
+
+
+\protected\def\simurgh@ifscanable#1{%
+  \begingroup
+  \edef\simurgh@resrvda{%
+    \def\noexpand\simurgh@resrvda####1\detokenize{macro}:####2->####3&{%
+      ####1\def\string\simurgh@resrvda####2{####3}}%
+    \edef\noexpand\simurgh@resrvda{\noexpand\simurgh@resrvda\meaning#1&}}%
+  \simurgh@resrvda
+  \makeatletter
+  \scantokens\expandafter{\simurgh@resrvda}%
+  \expandafter\endgroup\ifx#1\simurgh@resrvda
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
+
+\protected\long\def\simurgh@ifhashcheck#1{%
+  \begingroup
+  \edef\simurgh@resrvda{\detokenize{#1}}%
+  \expandafter\endgroup
+  \expandafter\simurgh@ifhashcheck@i\meaning\simurgh@resrvda&}
+
+\edef\simurgh@ifhashcheck@i#1&{%
+  \noexpand\expandafter
+  \noexpand\simurgh@ifhashcheck@ii
+  \noexpand\strip@prefix#1\string#\string#&}
+
+\edef\simurgh@ifhashcheck@ii{%
+  \def\noexpand\simurgh@ifhashcheck@ii##1\string#\string###2&}
+\simurgh@ifhashcheck@ii{\if@simurgh@blank{#2}}
+
+\protected\long\def\simurgh@ifpattern#1#2{%
+  \begingroup
+  \edef\simurgh@resrvda{%
+    \def\noexpand\simurgh@resrvda####1\detokenize{#2}####2&{%
+      \endgroup\noexpand\noexpand\noexpand\if@simurgh@blank{####2}}%
+    \edef\noexpand\simurgh@resrvda{\noexpand\simurgh@resrvda
+      \expandafter\strip@prefix\meaning#1\detokenize{#2}&}%
+    \noexpand\simurgh@resrvda}
+  \simurgh@resrvda\@secondoftwo\@firstoftwo}
+
+\newcommand{\if@simurgh@defparam}{}
+\long\edef\if@simurgh@defparam#1{%
+  \noexpand\expandafter\noexpand\simurgh@ifdefparam
+  \noexpand\meaning#1\detokenize{macro}:->&}
+\edef\simurgh@ifdefparam{%
+  \def\noexpand\simurgh@ifdefparam##1\detokenize{macro}:##2->##3&}
+\simurgh@ifdefparam{\simurgh@notblank{#2}}
+
+\newcommand{\if@simurgh@defprotected}{}
+\long\edef\if@simurgh@defprotected#1{%
+  \noexpand\expandafter\noexpand\simurgh@ifdefprotected
+  \noexpand\meaning#1\string\protected&}
+\edef\simurgh@ifdefprotected{%
+  \def\noexpand\simurgh@ifdefprotected##1\string\protected##2&}
+\simurgh@ifdefprotected{\simurgh@notblank{#2}}
+
+\simurgh@newrobustcmd{\simurgh@undef}[1]{\let#1\simurgh@undefined}
+
+\let\simurgh@dbg@trce\@gobble
+\let\simurgh@dbg@init\@gobble
+\let\simurgh@dbg@info\@gobble
+\let\simurgh@dbg@succ\@gobble
+\let\simurgh@dbg@fail\@gobble
+
+\simurgh@newrobustcmd*{\simurgh@apptocmd}{%
+  \simurgh@dbg@trce\simurgh@apptocmd
+  \begingroup
+  \@makeother\#%
+  \simurgh@hooktocmd\simurgh@append}
+
+\simurgh@newrobustcmd*{\simurgh@pretocmd}{%
+  \simurgh@dbg@trce\simurgh@pretocmd
+  \begingroup
+  \@makeother\#%
+  \simurgh@hooktocmd\simurgh@prepend}
+
+\long\def\simurgh@hooktocmd#1#2#3{%
+  \endgroup
+  \simurgh@dbg@init#2%
+  \if@simurgh@undef{#2}
+    {\simurgh@dbg@fail{def}\@secondoftwo}
+    {\simurgh@dbg@info{def}%
+     \if@simurgh@defmacro{#2}
+       {\simurgh@dbg@info{mac}%
+        \if@simurgh@defparam{#2}
+          {\simurgh@dbg@info{prm}%
+           \simurgh@ifscanable{#2}
+             {\simurgh@ifhashcheck{#3}
+                {\simurgh@dbg@info{tok}%
+                 \simurgh@dbg@succ{ret}%
+                 \simurgh@hooktocmd@i#1#2{#3}%
+                 \@firstoftwo}
+                {\simurgh@dbg@fail{hsh}\@secondoftwo}}
+             {\simurgh@dbg@fail{tok}\@secondoftwo}}
+          {\simurgh@dbg@info{prl}%
+           \if@simurgh@defprotected{#2}
+             {\simurgh@dbg@info{pro}%
+              \simurgh@dbg@succ{red}%
+              \protected}
+             {\simurgh@dbg@succ{red}}%
+           \edef#2{#1{\simurgh@expandonce#2}{\unexpanded{#3}}}%
+           \@firstoftwo}}
+       {\simurgh@dbg@fail{mac}\@secondoftwo}}}
+
+\long\def\simurgh@hooktocmd@i#1#2#3{%
+  \begingroup
+  \edef\simurgh@resrvda{%
+    \def\noexpand\simurgh@resrvda####1\detokenize{macro}:####2->####3&{%
+      ####1\def\string\simurgh@resrvda\space####2{#1{####3}{\detokenize{#3}}}}%
+    \edef\noexpand\simurgh@resrvda{%
+      \noexpand\simurgh@resrvda\meaning#2&}}%
+  \simurgh@resrvda
+  \simurgh@patchcmd@scantoks\simurgh@resrvda
+  \let#2\simurgh@resrvda
+  \simurgh@undef\simurgh@resrvda}
+
+\long\def\simurgh@append#1#2{#1#2}
+\long\def\simurgh@prepend#1#2{#2#1}
+
+\simurgh@newrobustcmd*{\simurgh@AtEndPreamble}{\simurgh@gappto\simurgh@endpreamblehook}
+\newcommand*{\simurgh@endpreamblehook}{}
+
+\simurgh@preto\document{%
+  \endgroup
+  \let\simurgh@AtEndPreamble\@firstofone
+  \simurgh@endpreamblehook
+  \protected\def\simurgh@AtEndPreamble{\@notprerr\@gobble}%
+  \simurgh@undef\simurgh@endpreamblehook
+  \begingroup}
+
+\simurgh@newrobustcmd*{\simurgh@AfterPreamble}{\AtBeginDocument}
+\simurgh@AtEndPreamble{\let\simurgh@AfterPreamble\@firstofone}
+
+\simurgh@newrobustcmd*{\simurgh@AfterEndPreamble}{\simurgh@gappto\simurgh@afterendpreamblehook}
+\newcommand*{\simurgh@afterendpreamblehook}{}
+
+\simurgh@appto\document{%
+  \let\simurgh@AfterEndPreamble\@firstofone
+  \simurgh@afterendpreamblehook
+  \protected\def\simurgh@AfterEndPreamble{\@notprerr\@gobble}%
+  \simurgh@undef\simurgh@afterendpreamblehook
+  \ignorespaces}
+
+\AtEndDocument{\let\simurgh@AfterEndPreamble\@gobble}
+
+\simurgh@newrobustcmd*{\simurgh@AfterEndDocument}{\simurgh@gappto\simurgh@afterenddocumenthook}
+\newcommand*{\simurgh@afterenddocumenthook}{}
+
+\simurgh@patchcmd\enddocument
+  {\deadcycles}
+  {\let\simurgh@AfterEndDocument\@firstofone
+   \simurgh@afterenddocumenthook
+   \deadcycles}
+  {}
+  {\let\simurgh@@end\@@end
+   \def\@@end{%
+     \let\simurgh@AfterEndDocument\@firstofone
+     \simurgh@afterenddocumenthook
+     \simurgh@@end}}
+
+\simurgh@newrobustcmd{\simurgh@AtBeginEnvironment}[1]{%
+  \simurgh@csgappto{@begin@#1@hook}}
+
+\simurgh@patchcmd\begin
+  {\csname #1\endcsname}
+  {\simurgh@csuse{@begin@#1@hook}%
+   \csname #1\endcsname}
+  {}
+  {\simurgh@warning{%
+     Patching '\string\begin' failed!\MessageBreak
+     '\string\simurgh@AtBeginEnvironment' will not work\@gobble}}
+
+\simurgh@newrobustcmd{\simurgh@AtEndEnvironment}[1]{%
+  \simurgh@csgappto{@end@#1@hook}}
+
+\simurgh@patchcmd\end
+  {\csname end#1\endcsname}
+  {\simurgh@csuse{@end@#1@hook}%
+   \csname end#1\endcsname}
+  {}
+  {\simurgh@warning{%
+     Patching '\string\end' failed!\MessageBreak
+     '\string\simurgh@AtEndEnvironment' will not work\@gobble}}
+
+\simurgh@newrobustcmd{\simurgh@BeforeBeginEnvironment}[1]{%
+  \simurgh@csgappto{@beforebegin@#1@hook}}
+
+\simurgh@pretocmd\begin
+  {\simurgh@csuse{@beforebegin@#1@hook}}
+  {}
+  {\simurgh@warning{%
+     Patching '\string\begin' failed!\MessageBreak
+     '\string\simurgh@BeforeBeginEnvironment' will not work\@gobble}}
+
+\simurgh@newrobustcmd{\simurgh@AfterEndEnvironment}[1]{%
+  \simurgh@csgappto{@afterend@#1@hook}}
+
+\simurgh@patchcmd\end
+  {\if@ignore}
+  {\simurgh@csuse{@afterend@#1@hook}%
+   \if@ignore}
+  {}
+  {\simurgh@warning{%
+     Patching '\string\end' failed!\MessageBreak
+     '\string\simurgh@AfterEndEnvironment' will not work\@gobble}}
+\endinput

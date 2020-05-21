@@ -1,0 +1,117 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-amsbook}[2013/09/18 v0.01a changes to `amsbook.cls']
+\renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\arabic{subparagraph}}
+\def\right@footnoterule{%
+  \hbox dir TRT to \columnwidth
+  {\vbox{\kern-.4\p@
+        \hrule\@width 5pc\kern11\p@\kern-\footnotesep}\hfil}}
+\def\left@footnoterule{%
+  \hbox dir TLT to \columnwidth
+  {\vbox{\kern-.4\p@
+        \hrule\@width 5pc\kern11\p@\kern-\footnotesep}\hfil}}
+
+\long\def\@footnotetext#1{%
+  \insert\footins{%
+    \if@RTL@footnote%
+      \@RTLtrue%
+      \pardir TRT%
+      \textdir TRT%
+      \reset@parsifont%
+    \else%
+      \@RTLfalse%
+      \pardir TLT%
+      \textdir TLT%
+      \reset@latinfont%
+    \fi%
+    \footnotesize
+    \interlinepenalty\interfootnotelinepenalty
+    \splittopskip\footnotesep \splitmaxdepth \dp\strutbox
+    \floatingpenalty\@MM \hsize\columnwidth
+    \@parboxrestore \parindent\normalparindent \sloppy
+    \protected@edef\@currentlabel{%
+      \csname p@footnote\endcsname\@thefnmark}%
+    \@makefntext{%
+      \rule\z@\footnotesep\ignorespaces#1\unskip\strut\par}}}
+
+\long\def\@RTLfootnotetext#1{%
+  \insert\footins{%
+    \@RTLtrue%
+    \pardir TRT%
+    \textdir TRT%
+    \reset@parsifont%
+    \footnotesize
+    \interlinepenalty\interfootnotelinepenalty
+    \splittopskip\footnotesep \splitmaxdepth \dp\strutbox
+    \floatingpenalty\@MM \hsize\columnwidth
+    \@parboxrestore \parindent\normalparindent \sloppy
+    \protected@edef\@currentlabel{%
+      \csname p@footnote\endcsname\@thefnmark}%
+    \@makefntext{%
+      \rule\z@\footnotesep\ignorespaces#1\unskip\strut\par}}}
+
+\long\def\@LTRfootnotetext#1{%
+  \insert\footins{%
+    \@RTLfalse%
+    \pardir TLT%
+    \textdir TLT%
+    \reset@latinfont%
+    \footnotesize
+    \interlinepenalty\interfootnotelinepenalty
+    \splittopskip\footnotesep \splitmaxdepth \dp\strutbox
+    \floatingpenalty\@MM \hsize\columnwidth
+    \@parboxrestore \parindent\normalparindent \sloppy
+    \protected@edef\@currentlabel{%
+      \csname p@footnote\endcsname\@thefnmark}%
+    \@makefntext{%
+      \rule\z@\footnotesep\ignorespaces#1\unskip\strut\par}}}
+
+\footdir@temp\footdir@ORG@simurgh@amsbook@footnotetext\@footnotetext{\simurgh@footdir@footnote}%
+\footdir@temp\footdir@ORG@simurgh@amsbook@RTLfootnotetext\@RTLfootnotetext{R}%
+\footdir@temp\footdir@ORG@simurgh@amsbook@LTRfootnotetext\@LTRfootnotetext{L}%
+
+\renewenvironment{thebibliography}[1]{%
+  \@bibtitlestyle
+  \normalfont\bibliofont\labelsep .5em\relax
+  \renewcommand\theenumiv{\arabic{enumiv}}\let\p@enumiv\@empty
+  \if@RTL%
+    \if@LTRbibitems%
+      \@RTLfalse%
+      \pardir TLT%
+      \textdir TLT%
+    \fi%
+  \else%
+    \if@RTLbibitems%
+      \@RTLtrue%
+      \pardir TRT%
+      \textdir TRT%
+    \fi%
+  \fi%
+  \list{\@biblabel{\theenumiv}}{\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth \advance\leftmargin\labelsep
+    \usecounter{enumiv}}%
+  \sloppy \clubpenalty\@M \widowpenalty\clubpenalty
+  \sfcode`\.=\@m
+}{%
+  \def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}%
+  \endlist
+}
+\def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
+  \columnseprule\z@ \columnsep 35\p@
+  \@indextitlestyle
+  \thispagestyle{plain}%
+  \let\item\@idxitem
+  \parindent\z@  \parskip\z@\@plus.3\p@\relax
+  \simurgh@raggedright
+  \hyphenpenalty\@M
+  \footnotesize}
+  
+\def\frontmatter{\cleardoublepage\pagenumbering{harfi}}
+\renewcommand \thepart {\@tartibi\c@part}
+\def\appendix{\par
+  \c@chapter\z@ \c@section\z@
+  \let\chaptername\appendixname
+  \def\thechapter{\@harfi\c@chapter}}
+\endinput

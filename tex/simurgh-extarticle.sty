@@ -1,0 +1,85 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{simurgh-extarticle}[2013/09/18 v0.01a changes to `extarticle.cls']
+
+  \def\@part[#1]#2{%
+    \ifnum \c@secnumdepth >\m@ne
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\thepart\hspace{1em}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    {\parindent \z@ \simurgh@raggedright
+     \interlinepenalty \@M
+     \normalfont
+     \ifnum \c@secnumdepth >\m@ne
+       \Large\bfseries \partname~\thepart
+       \par\nobreak
+     \fi
+     \huge \bfseries #2%
+     \markboth{}{}\par}%
+    \nobreak
+    \vskip 3ex
+    \@afterheading}
+ \def\@spart#1{%
+    {\parindent \z@ \simurgh@raggedright
+     \interlinepenalty \@M
+     \normalfont
+     \huge \bfseries #1\par}%
+     \nobreak
+     \vskip 3ex
+     \@afterheading}
+\renewenvironment{thebibliography}[1]
+     {\section*{\refname
+        \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}}%
+      \if@RTL%
+        \if@LTRbibitems%
+          \@RTLfalse%
+          \pardir TLT%
+          \textdir TLT%
+        \fi%
+      \else%
+        \if@RTLbibitems%
+          \@RTLtrue%
+          \pardir TRT%
+          \textdir TRT%
+        \fi%
+      \fi%
+         \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy\clubpenalty4000\widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\renewcommand\left@footnoterule{%
+  \hbox dir TLT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \hrule\@width.4\columnwidth
+  \kern2.6\p@}\hfil}}
+\renewcommand\right@footnoterule{%
+  \hbox dir TRT to \columnwidth
+  {\vbox{%
+  \kern-3\p@
+  \hrule\@width.4\columnwidth
+  \kern2.6\p@}\hfil}}
+
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}%%
+
+
+\renewcommand\thepart         {\@tartibi\c@part}
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@harfi\c@section}}
+
+\endinput
